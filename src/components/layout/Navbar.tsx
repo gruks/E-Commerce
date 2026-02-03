@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
+import { ShoppingBag } from "lucide-react";
 import Searchbar from "./Searchbar";
 import Menu from "./Menu";
 import gsap from "gsap";
@@ -13,7 +14,6 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-  const [hovered, setHovered] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
 
   const handleMenuOpen = () => {
@@ -71,8 +71,6 @@ export default function Navbar() {
       {/* NAVBAR */}
       <header
         ref={headerRef}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
         className="fixed top-0 left-0 w-full z-50 text-black"
         style={{
           backgroundColor: "rgba(255, 255, 255, 0)", // Initial transparent
@@ -106,13 +104,28 @@ export default function Navbar() {
             necter<span className="text-[#fc6902]">.</span>
           </Link>
 
-          {/* Right: Search */}
-          <button
-            onClick={() => setShowSearch(true)}
-            className="text-sm font-medium tracking-wide ml-auto hover:text-[#fc6902] transition-colors"
-          >
-            Search
-          </button>
+          {/* Right: Search & Cart */}
+          <div className="flex items-center gap-6 ml-auto">
+            <button
+              onClick={() => setShowSearch(true)}
+              className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors px-2 py-1"
+            >
+              Search
+            </button>
+            
+            <Link
+              href="/cart"
+              className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors flex items-center gap-2 px-2 py-1 relative"
+            >
+              <div className="relative">
+                <ShoppingBag className="w-4 h-4" />
+                {/* Cart Counter */}
+                <span className="absolute -top-2 -right-2 bg-[#fc6902] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium">
+                  3
+                </span>
+              </div>
+            </Link>
+          </div>
         </div>
       </header>
 
