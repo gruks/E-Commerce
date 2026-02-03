@@ -1,27 +1,24 @@
-import {
-  ShoppingCart,
-  PackageSearch,
-  Flame,
-  List,
-  Boxes,
-  ChevronRight,
-} from "lucide-react";
+type MenuItem = {
+  label: string;
+  href?: string;
+  hasSubcategories?: boolean;
+  subcategories?: MenuItem[];
+};
 
 export const NAVBAR_ITEMS = [
   {
     label: "Best Seller",
     href: "/best-sellers",
-    icon: Flame,
+    hasSubcategories: false
   },
   {
     label: "Track Order",
     href: "/track-order",
-    icon: PackageSearch,
+    hasSubcategories: false,
   },
   {
     label: "Categories",
     href: "/categories",
-    icon: List,
     hasSubcategories: true,
     subcategories: [
       { label: "Electronics", href: "/categories/electronics" },
@@ -35,12 +32,12 @@ export const NAVBAR_ITEMS = [
   {
     label: "Products",
     href: "/products",
-    icon: Boxes,
+    hasSubcategories: false
   },
   {
     label: "Cart",
     href: "/cart",
-    icon: ShoppingCart,
+    hasSubcategories: false
   },
 ] as const;
 
