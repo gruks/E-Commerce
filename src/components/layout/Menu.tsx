@@ -3,16 +3,64 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ChevronRight, ArrowLeft } from "lucide-react";
-import { NAVBAR_ITEMS, MenuItem } from "@/src/styles/constants";
+import { NAVBAR_ITEMS } from "@/src/styles/constants";
+import gsap from "gsap";
 
 interface MenuProps {
   open: boolean;
   onClose: () => void;
 }
 
+// Define MenuItem type locally since it's not exported
+interface MenuItem {
+  label: string;
+  href: string;
+  hasSubcategories: boolean;
+  subcategories?: MenuItem[];
+}
+
 export default function Menu({ open, onClose }: MenuProps) {
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // GSAP Animation for menu slide in/out
+  useEffect(() => {
+    if (!menuRef.current) return;
+
+    if (open) {
+      gsap.to(menuRef.current, {
+        x: 0,
+        duration: 1.1,
+        ease: "power4.out",
+      });
+    } else {
+      gsap.to(menuRef.current, {
+        x: "-100%",
+        duration: 0.8,
+        ease: "power4.in"
+      });
+    }
+  }, [open]);
+
+  // GSAP Animation for submenu transitions
+  useEffect(() => {
+    if (!contentRef.current) return;
+
+    // Animate content when submenu changes
+    gsap.fromTo(contentRef.current, 
+      { 
+        opacity: 0,
+        x: 20
+      },
+      {
+        opacity: 1,
+        x: 0,
+        duration: 0.6,
+        ease: "power3.out"
+      }
+    );
+  }, [activeSubmenu]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -42,31 +90,51 @@ export default function Menu({ open, onClose }: MenuProps) {
   }, [open, onClose]);
 
   const handleSubmenuClose = () => {
-    setActiveSubmenu(null);
+    // Animate out before changing state
+    if (contentRef.current) {
+      gsap.to(contentRef.current, {
+        opacity: 0,
+        x: -20,
+        duration: 0.3,
+        ease: "power2.in",
+        onComplete: () => {
+          setActiveSubmenu(null);
+        }
+      });
+    } else {
+      setActiveSubmenu(null);
+    }
   };
 
   const getCurrentItems = (): MenuItem[] => {
     if (!activeSubmenu) {
-      console.log('getCurrentItems: No activeSubmenu, returning NAVBAR_ITEMS');
-      return NAVBAR_ITEMS;
+      return NAVBAR_ITEMS as MenuItem[];
     }
     
-    const activeItem = NAVBAR_ITEMS.find(
+    const activeItem = (NAVBAR_ITEMS as MenuItem[]).find(
       item => item.label === activeSubmenu
     );
     
-    const result = activeItem?.subcategories ?? [];
-    console.log('getCurrentItems: activeSubmenu =', activeSubmenu, 'returning subcategories:', result);
-    return result;
+    return activeItem?.subcategories ?? [];
   };
 
   const handleItemClick = (item: MenuItem) => {
-    console.log('handleItemClick called with item:', item);
     if (item.hasSubcategories) {
-      console.log('Item has subcategories, opening submenu for:', item.label);
-      setActiveSubmenu(item.label);
+      // Animate out current content before showing submenu
+      if (contentRef.current) {
+        gsap.to(contentRef.current, {
+          opacity: 0,
+          x: 20,
+          duration: 0.3,
+          ease: "power2.in",
+          onComplete: () => {
+            setActiveSubmenu(item.label);
+          }
+        });
+      } else {
+        setActiveSubmenu(item.label);
+      }
     } else {
-      console.log('Item has no subcategories, closing menu');
       onClose();
     }
   };
@@ -98,20 +166,14 @@ export default function Menu({ open, onClose }: MenuProps) {
           {/* Menu Drawer */}
           <div
             ref={menuRef}
-            className={`fixed left-0 h-screen bg-white z-50 font-quicksand overflow-hidden shadow-2xl ${
-              open ? "translate-x-0" : "-translate-x-full"
-            } transition-all duration-700 ease-out`}
+            className="fixed left-0 h-screen bg-white z-50 font-quicksand overflow-hidden shadow-2xl"
             style={{
               width: '400px',
               maxWidth: '70vw',
               padding: '0',
               backgroundColor: 'rgb(255, 255, 255)',
               zIndex: 100,
-              transform: open ? 'translateX(0)' : 'translateX(-100%)',
-              transitionProperty: 'transform, opacity, box-shadow',
-              transitionDuration: '0.7s',
-              transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-              opacity: open ? 1 : 0,
+              transform: 'translateX(-100%)', // Initial position for GSAP
               top: '65px',
               height: 'calc(100vh - 65px)',
             }}
@@ -138,96 +200,98 @@ export default function Menu({ open, onClose }: MenuProps) {
                     `
                   }} />
                   
-                  <ul 
-                    className="list-none p-0 m-0" 
-                    style={{ 
-                      listStyle: 'none', 
-                      padding: 0, 
-                      margin: 0
-                    }}
-                  >
-                    {/* Back button and heading for subcategories */}
-                    {activeSubmenu && (
-                      <li className="border-b border-gray-900" style={{ borderBottomWidth: '0.05rem' }}>
-                        <div
-                          className="flex items-center hover:bg-gray-50 transition-all duration-200 cursor-pointer group"
-                          style={{ 
-                            padding: '1.2rem 0rem',
-                            flex: '0 0 100%'
-                          }}
-                          onClick={handleSubmenuClose}
-                        >
-                          <ArrowLeft className="w-4 h-4 text-gray-600" style={{ marginRight: '1rem' }} />
-                          <span
-                            className="flex font-bold text-gray-900 tracking-wide uppercase"
-                            style={{ 
-                              fontSize: '0.82rem',
-                              fontFamily: 'var(--font-navigation-family, var(--font-heading-family, inherit))',
-                              color: 'rgb(0, 0, 0)',
-                              letterSpacing: '0.05rem',
-                            }}
-                          >
-                            {activeSubmenu}
-                          </span>
-                        </div>
-                      </li>
-                    )}
-                    
-                    {(() => {
-                      const items = getCurrentItems();
-                      return items.map((item, index) => (
-                        <li 
-                          key={item.label} 
-                          className={`${index === items.length - 1 ? '' : 'border-b border-gray-900'}`} 
-                          style={{ 
-                            borderBottomWidth: index === items.length - 1 ? '0' : '0.05rem'
-                          }}
-                        >
+                  <div ref={contentRef}>
+                    <ul 
+                      className="list-none p-0 m-0" 
+                      style={{ 
+                        listStyle: 'none', 
+                        padding: 0, 
+                        margin: 0
+                      }}
+                    >
+                      {/* Back button and heading for subcategories */}
+                      {activeSubmenu && (
+                        <li className="border-b border-gray-900" style={{ borderBottomWidth: '0.05rem' }}>
                           <div
-                            className="flex items-center justify-between hover:bg-gray-50 transition-all duration-200 cursor-pointer group"
+                            className="flex items-center hover:bg-gray-50 transition-all duration-200 cursor-pointer group"
                             style={{ 
                               padding: '1.2rem 0rem',
                               flex: '0 0 100%'
                             }}
-                            onClick={() => {
-                              if (item.hasSubcategories) {
-                                handleItemClick(item);
-                              } else if (activeSubmenu) {
-                                // We're in a submenu, so this is a subcategory click
-                                handleSubcategoryClick();
-                              }
-                              // For main menu items without subcategories, let the Link handle navigation
-                            }}
+                            onClick={handleSubmenuClose}
                           >
-                            <Link
-                              href={item.href}
-                              className="flex font-medium text-gray-900 tracking-wide uppercase no-underline"
+                            <ArrowLeft className="w-4 h-4 text-gray-600" style={{ marginRight: '1rem' }} />
+                            <span
+                              className="flex font-bold text-gray-900 tracking-wide uppercase"
                               style={{ 
-                                fontSize: '0.75rem',
+                                fontSize: '0.82rem',
                                 fontFamily: 'var(--font-navigation-family, var(--font-heading-family, inherit))',
                                 color: 'rgb(0, 0, 0)',
-                                letterSpacing: '0.05rem'
-                              }}
-                              onClick={(e) => {
-                                if (item.hasSubcategories) {
-                                  e.preventDefault();
-                                } else {
-                                  // For items without subcategories, close the menu and allow navigation
-                                  onClose();
-                                }
+                                letterSpacing: '0.05rem',
                               }}
                             >
-                              {item.label}
-                            </Link>
-                            
-                            {item.hasSubcategories && (
-                              <ChevronRight className="w-2 h-2 text-gray-400 group-hover:text-gray-600 transition-colors duration-200 mr-2" />
-                            )}
+                              {activeSubmenu}
+                            </span>
                           </div>
                         </li>
-                      ));
-                    })()}
-                  </ul>
+                      )}
+                      
+                      {(() => {
+                        const items = getCurrentItems();
+                        return items.map((item, index) => (
+                          <li 
+                            key={item.label} 
+                            className={`${index === items.length - 1 ? '' : 'border-b border-gray-900'}`} 
+                            style={{ 
+                              borderBottomWidth: index === items.length - 1 ? '0' : '0.05rem'
+                            }}
+                          >
+                            <div
+                              className="flex items-center justify-between hover:bg-gray-50 transition-all duration-200 cursor-pointer group"
+                              style={{ 
+                                padding: '1.2rem 0rem',
+                                flex: '0 0 100%'
+                              }}
+                              onClick={() => {
+                                if (item.hasSubcategories) {
+                                  handleItemClick(item);
+                                } else if (activeSubmenu) {
+                                  // We're in a submenu, so this is a subcategory click
+                                  handleSubcategoryClick();
+                                }
+                                // For main menu items without subcategories, let the Link handle navigation
+                              }}
+                            >
+                              <Link
+                                href={item.href}
+                                className="flex font-medium text-gray-900 tracking-wide uppercase no-underline"
+                                style={{ 
+                                  fontSize: '0.75rem',
+                                  fontFamily: 'var(--font-navigation-family, var(--font-heading-family, inherit))',
+                                  color: 'rgb(0, 0, 0)',
+                                  letterSpacing: '0.05rem'
+                                }}
+                                onClick={(e) => {
+                                  if (item.hasSubcategories) {
+                                    e.preventDefault();
+                                  } else {
+                                    // For items without subcategories, close the menu and allow navigation
+                                    onClose();
+                                  }
+                                }}
+                              >
+                                {item.label}
+                              </Link>
+                              
+                              {item.hasSubcategories && (
+                                <ChevronRight className="w-2 h-2 text-gray-400 group-hover:text-gray-600 transition-colors duration-200 mr-2" />
+                              )}
+                            </div>
+                          </li>
+                        ));
+                      })()}
+                    </ul>
+                  </div>
                 </nav>
               </div>
 
