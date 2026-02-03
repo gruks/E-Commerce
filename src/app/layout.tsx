@@ -32,7 +32,7 @@ export default function RootLayout({
     <html lang="en" className={`${leagueSpartan.variable} ${quicksand.variable}`}>
       <body className="antialiased">
         <Navbar />
-        <main className="!pt-24 md:!pt-28" style={{ paddingTop: '6rem' }}>
+        <main className="!pt-18 md:!pt-20" style={{ paddingTop: '4rem' }}>
           {children}
         </main>
         <Footer />

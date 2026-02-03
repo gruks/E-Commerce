@@ -1,74 +1,106 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Star, Truck, Shield, Headphones } from "lucide-react";
+import { ArrowRight, Truck, Shield, Headphones } from "lucide-react";
+import StarBorder from "../components/ui/StarBorder";
+import { useRef, useEffect } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 // Hero Section Component
 const HeroSection = () => {
+  const taglineRef = useRef<HTMLHeadingElement>(null);
+
+  useGSAP(() => {
+    if (!taglineRef.current) return;
+
+    // Split the text into individual characters
+    const text = taglineRef.current.textContent || "";
+    const chars = text.split("").map((char, index) => 
+      `<span key="${index}" style="display: inline-block;">${char === " " ? "&nbsp;" : char}</span>`
+    ).join("");
+    
+    taglineRef.current.innerHTML = chars;
+    
+    // Get all character spans
+    const charElements = taglineRef.current.querySelectorAll("span");
+    
+    // Set initial state - characters start from bottom
+    gsap.set(charElements, {
+      opacity: 0,
+      y: 100, // Start from bottom (100px below)
+      x: () => gsap.utils.random(-20, 20), // Slight horizontal randomness
+      rotation: () => gsap.utils.random(-10, 10), // Subtle rotation
+      scale: 0.8 // Slightly smaller
+    });
+
+    // Animate to final positions with smooth ease-in
+    gsap.to(charElements, {
+      opacity: 1,
+      y: 0, // Move to original position
+      x: 0, // Center horizontally
+      rotation: 0, // No rotation
+      scale: 1, // Normal size
+      duration: 1.5, // Slower, smoother animation
+      ease: "power4.out", // Smooth ease-in effect
+      stagger: {
+        amount: 1.5, // Longer stagger for smoother effect
+        from: "random" // Random order
+      },
+      delay: 0.2 // Shorter initial delay
+    });
+  }, { scope: taglineRef });
+
   return (
-    <section className="relative bg-gradient-to-br from-bg-secondary to-bg-primary overflow-hidden">
-      <div className="container">
-        <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[600px] py-12 lg:py-20">
-          {/* Left Content */}
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <h1 className="text-display text-text-primary font-spartan font-bold">
-                Clean Beauty,
-                <span className="block text-text-secondary">Simplified</span>
-              </h1>
-              <p className="text-body-large text-text-secondary max-w-lg font-quicksand font-light">
-                Discover our curated collection of necter skincare essentials. 
-                Science-backed formulas with clean ingredients for healthy, glowing skin.
-              </p>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/shop" className="btn btn-primary btn-lg font-quicksand font-medium">
-                Shop Best Sellers
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link href="/about" className="btn btn-ghost btn-lg font-quicksand">
-                Learn More
-              </Link>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="flex items-center gap-8 pt-8 border-t border-border-default">
-              <div className="flex items-center gap-2">
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <span className="text-body-small text-text-muted font-quicksand font-light">4.8/5 (2.1k reviews)</span>
-              </div>
-              <div className="text-body-small text-text-muted font-quicksand font-light">
-                <strong className="text-text-primary font-medium">50k+</strong> Happy Customers
-              </div>
-            </div>
-          </div>
-
-          {/* Right Image */}
-          <div className="relative">
-            <div className="aspect-square bg-gradient-to-br from-bg-secondary to-border-default rounded-2xl overflow-hidden">
-              <Image
-                src="/placeholder.svg"
-                alt="Clean skincare products"
-                width={600}
-                height={600}
-                className="w-full h-full object-cover"
-                priority
-              />
-            </div>
-            {/* Floating Elements */}
-            <div className="absolute -top-4 -right-4 bg-bg-tertiary rounded-full p-4 shadow-md border border-border-default">
-              <div className="text-center">
-                <div className="text-heading-3 text-text-primary font-spartan font-bold">10%</div>
-                <div className="text-caption text-text-muted font-quicksand">Cashback</div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <section className="min-h-screen bg-primary from-gray-100 via-gray-50 to-white relative overflow-hidden" 
+    style={{ 
+      marginLeft: '5rem',
+      marginRight: '5rem'
+      }}>
+      <div className="promo-heading flex justify-between items-end" 
+           >
+        <h1 
+           ref={taglineRef}
+           style={{ 
+             fontFamily: 'Aeonik, Arial, sans-serif',
+             fontSize: '7em',
+             lineHeight: '110%',
+             letterSpacing: '-0.02em'
+           }}
+        >
+          TagLine
+        </h1>
+          <Link href="/contact-us">
+            <StarBorder
+              as="button"
+              className="custom-class"
+              color="magenta"
+              speed="8s"
+            >
+              Contact Us
+            </StarBorder>
+          </Link>
       </div>
+      <div className="divider-hero-line max-w-full bg-black" 
+      style={{ 
+        marginTop: '1rem',
+        marginBottom: '1rem',
+        width: '100%', 
+        height: '0.05rem',
+        translate: 'none', 
+        rotate: 'none', 
+        scale: 'none', 
+        transform: 'translate3d(0px, 0px, 0px)' 
+      }}>
+
+      </div>
+      <div className="promo-description">
+        <span className="font-bold ">
+            BEAUTY
+        </span>
+      </div>
+
     </section>
   );
 };
