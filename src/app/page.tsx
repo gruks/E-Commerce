@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ArrowRight, Truck, Shield, Headphones } from "lucide-react";
 import StarBorder from "../components/ui/StarBorder";
 import { AnimatedWords, AnimatedLines } from "../components/ui/AnimatedText";
+import { usePageRevealer } from "../components/ui/PageTransition";
+import ClientWrapper from "../components/ui/ClientWrapper";
 
 // Hero Section Component
 const HeroSection = () => {
@@ -185,11 +187,16 @@ const FeaturesSection = () => {
 
 // Main Homepage Component
 export default function HomePage() {
+  // Add the page revealer animation
+  usePageRevealer();
+
   return (
-    <main>
-      <HeroSection />
-      <CategoryCards />
-      <FeaturesSection />
-    </main>
+    <ClientWrapper showLoading={true} loadingDuration={3500}>
+      <main>
+        <HeroSection />
+        <CategoryCards />
+        <FeaturesSection />
+      </main>
+    </ClientWrapper>
   );
 }
