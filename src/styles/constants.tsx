@@ -5,6 +5,12 @@ type MenuItem = {
   subcategories?: MenuItem[];
 };
 
+type StaggeredMenuItem = {
+  label: string;
+  ariaLabel: string;
+  link: string;
+};
+
 export const NAVBAR_ITEMS = [
   {
     label: "Best Seller",
@@ -40,6 +46,21 @@ export const NAVBAR_ITEMS = [
     hasSubcategories: false
   },
 ] as const;
+
+export const STAGGERED_MENU_ITEMS: StaggeredMenuItem[] = [
+  { label: 'Home', ariaLabel: 'Go to home page', link: '/' },
+  { label: 'Shop', ariaLabel: 'Browse all products', link: '/shop' },
+  { label: 'Categories', ariaLabel: 'View product categories', link: '/categories' },
+  { label: 'Best Sellers', ariaLabel: 'View best selling products', link: '/best-sellers' },
+  { label: 'Cart', ariaLabel: 'View shopping cart', link: '/cart' },
+  { label: 'Track Orders', ariaLabel: 'Track your orders', link: '/track-orders' }
+];
+
+export const SOCIAL_ITEMS = [
+  { label: 'Instagram', link: 'https://instagram.com' },
+  { label: 'Facebook', link: 'https://facebook.com' },
+  { label: 'Twitter', link: 'https://twitter.com' }
+];
 
 export const LOGO = {
   name: "necter.",

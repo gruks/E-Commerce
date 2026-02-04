@@ -3,6 +3,7 @@ import { League_Spartan, Quicksand } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/src/components/layout/Navbar";
 import Footer from "@/src/components/layout/Footer";
+import { ViewTransitions } from "next-view-transitions";
 
 const leagueSpartan = League_Spartan({
   subsets: ["latin"],
@@ -29,14 +30,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${leagueSpartan.variable} ${quicksand.variable}`}>
-      <body className="antialiased">
-        <Navbar />
-        <main className="!pt-18 md:!pt-20" style={{ paddingTop: '4rem' }}>
-          {children}
-        </main>
-        <Footer />
-      </body>
-    </html>
+    <ViewTransitions>
+      <html lang="en" className={`${leagueSpartan.variable} ${quicksand.variable}`}>
+        <body className="antialiased">
+          <Navbar />
+          <main className="!pt-18 md:!pt-20" style={{ paddingTop: '4rem' }}>
+            {children}
+          </main>
+          <Footer />
+        </body>
+      </html>
+    </ViewTransitions>
   );
 }

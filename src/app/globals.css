@@ -7,7 +7,6 @@
 * {
   box-sizing: border-box;
   margin: 0;
-  padding: 0;
 }
 
 :root {
@@ -533,6 +532,49 @@ body {
   }
 }
 
+/* View Transitions with Polygon Clip-Path Animation - Premium Timing */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 3s; /* Increased from 2s to 3s for premium feel */
+  animation-timing-function: cubic-bezier(0.9, 0, 0.1, 1);
+}
+
+::view-transition-new(root) {
+  animation-name: polygon-reveal;
+  z-index: 9999;
+}
+
+::view-transition-old(root) {
+  animation-name: none;
+  z-index: 1;
+}
+
+@keyframes polygon-reveal {
+  0% {
+    clip-path: polygon(25% 75%, 75% 75%, 75% 75%, 25% 75%);
+  }
+  100% {
+    clip-path: polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%);
+  }
+}
+
+/* Revealer styles for GSAP page transitions - Premium Feel */
+.revealer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100svh;
+  transform-origin: center top;
+  pointer-events: none;
+  z-index: 9999;
+  transform: scaleY(1);
+  background: #fc6902;
+  opacity: 1;
+  /* Add subtle gradient for premium feel */
+  background: linear-gradient(135deg, #fc6902 0%, #e85f02 100%);
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -617,21 +659,24 @@ body {
   }
 }
 
+/* Product Card 3D Flip Animation Styles */
+.backface-hidden {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.rotate-y-\[-180deg\] {
+  transform: rotateY(-180deg);
+}
+
+.perspective-\[1200px\] {
+  perspective: 1200px;
+}
+
 .letter,
 .word,
 .line {
   position: relative;
   display: inline-block;
   will-change: transform;
-}
-
-.revealer {
-  position:fixed;
-  top: 0;
-  left : 0;
-  width: 100vw;
-  height: 100svh;
-  tansform-origin: center top;
-  pointer-events: none;
-  z-index: 2;
 }

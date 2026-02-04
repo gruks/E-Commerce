@@ -1,5 +1,6 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import TransitionLink from './TransitionLink';
 
 export interface StaggeredMenuItem {
   label: string;
@@ -500,16 +501,14 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
               {items && items.length ? (
                 items.map((it, idx) => (
                   <li className="sm-panel-itemWrap relative overflow-hidden leading-none" key={it.label + idx}>
-                    <a
+                    <TransitionLink
                       className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]"
                       href={it.link}
-                      aria-label={it.ariaLabel}
-                      data-index={idx + 1}
                     >
                       <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%] will-change-transform">
                         {it.label}
                       </span>
-                    </a>
+                    </TransitionLink>
                   </li>
                 ))
               ) : (

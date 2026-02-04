@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Search, Package, Truck, CheckCircle, Clock, MapPin, Phone, Mail } from "lucide-react";
+import { usePageRevealer } from "../../components/ui/PageTransition";
 
 // Define the tracking data type
 interface TrackingData {
@@ -28,6 +29,9 @@ interface TrackingData {
 }
 
 const TrackOrdersPage = () => {
+  // Add the page revealer animation with CustomEase "hop" effect
+  usePageRevealer();
+  
   const [orderNumber, setOrderNumber] = useState("");
   const [email, setEmail] = useState("");
   const [trackingResult, setTrackingResult] = useState<TrackingData | null>(null);

@@ -1,12 +1,123 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { Star, Heart, ShoppingCart, Award, TrendingUp } from "lucide-react";
+import { Award, TrendingUp } from "lucide-react";
+import { usePageRevealer } from "../../components/ui/PageTransition";
+import ProductGrid from "../../components/ui/ProductGrid";
+import ProductCard from "../../components/ui/ProductCard";
+import { Product } from "../../types/product";
 
-// Mock best sellers data
-const bestSellers = [
+// Mock best sellers data using the new Product type
+const bestSellers: Product[] = [
+  {
+    id: "1",
+    name: "Vitamin C Brightening Serum",
+    subtitle: "Brightens skin tone & reduces dark spots",
+    price: 299,
+    rating: 5,
+    imageFront: "/placeholder.svg",
+    imageBack: "/placeholder.svg",
+    hasSizes: false
+  },
+  {
+    id: "2", 
+    name: "Hyaluronic Acid Moisturizer",
+    subtitle: "Deep hydration & plumping effect",
+    price: 445,
+    rating: 5,
+    imageFront: "/placeholder.svg",
+    imageBack: "/placeholder.svg",
+    hasSizes: false
+  },
+  {
+    id: "3",
+    name: "Retinol Night Treatment",
+    subtitle: "Anti-aging & skin renewal overnight",
+    price: 567,
+    rating: 4,
+    imageFront: "/placeholder.svg",
+    imageBack: "/placeholder.svg",
+    hasSizes: false
+  },
+  {
+    id: "4",
+    name: "Niacinamide Pore Control",
+    subtitle: "Minimizes pores & controls oil",
+    price: 356,
+    rating: 5,
+    imageFront: "/placeholder.svg",
+    imageBack: "/placeholder.svg",
+    hasSizes: false
+  }
+];
+
+export default function BestSellersPage() {
+  // Add the page revealer animation with CustomEase "hop" effect
+  usePageRevealer();
+  
+  return (
+    <div className="min-h-screen bg-bg-primary">
+      {/* Hero Section */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="container mx-auto px-4 py-12">
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Award className="w-6 h-6 text-[#fc6902]" />
+              <span className="text-sm font-medium text-[#fc6902] uppercase tracking-wide">Best Sellers</span>
+            </div>
+            <h1 className="text-heading-1 text-gray-900 mb-4">Customer Favorites</h1>
+            <p className="text-body-large text-gray-600 max-w-2xl mx-auto">
+              Discover our most loved products. These customer favorites have earned their place through 
+              proven results and thousands of positive reviews.
+            </p>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <TrendingUp className="w-5 h-5 text-[#fc6902]" />
+                <span className="text-2xl font-bold text-gray-900">10k+</span>
+              </div>
+              <p className="text-sm text-gray-600">Products Sold</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <span className="text-2xl">⭐</span>
+                <span className="text-2xl font-bold text-gray-900">4.8</span>
+              </div>
+              <p className="text-sm text-gray-600">Average Rating</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <span className="text-2xl">💝</span>
+                <span className="text-2xl font-bold text-gray-900">95%</span>
+              </div>
+              <p className="text-sm text-gray-600">Repurchase Rate</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Products Section */}
+      <div className="container mx-auto py-12">
+        <div className="mb-8">
+          <h2 className="text-heading-2 text-gray-900 mb-4">Top Rated Products</h2>
+          <p className="text-body text-gray-600">
+            These products have consistently received 5-star reviews from our customers.
+          </p>
+        </div>
+
+        {/* Product Grid */}
+        <ProductGrid>
+          {bestSellers.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </ProductGrid>
+      </div>
+    </div>
+  );
+}
   {
     id: 1,
     name: "Vitamin C Brightening Serum",
@@ -181,6 +292,9 @@ const ProductCard = ({ product }: { product: any }) => {
 };
 
 export default function BestSellersPage() {
+  // Add the page revealer animation with CustomEase "hop" effect
+  usePageRevealer();
+  
   return (
     <div className="min-h-screen bg-bg-primary">
       {/* Header */}

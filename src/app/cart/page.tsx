@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, Lock } from "lucide-react";
+import { usePageRevealer } from "../../components/ui/PageTransition";
 
 // Mock cart data
 const initialCartItems = [
@@ -194,6 +195,9 @@ const EmptyCart = () => {
 };
 
 export default function CartPage() {
+  // Add the page revealer animation with CustomEase "hop" effect
+  usePageRevealer();
+  
   const [cartItems, setCartItems] = useState(initialCartItems);
 
   const updateQuantity = (id: number, quantity: number) => {

@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { usePageRevealer } from "../../components/ui/PageTransition";
 
 const categories = [
   {
@@ -113,6 +116,9 @@ const CategoryCard = ({ category, featured = false }: { category: any; featured?
 };
 
 export default function CategoriesPage() {
+  // Add the page revealer animation with CustomEase "hop" effect
+  usePageRevealer();
+  
   const featuredCategory = categories.find(cat => cat.featured);
   const otherCategories = categories.filter(cat => !cat.featured);
 

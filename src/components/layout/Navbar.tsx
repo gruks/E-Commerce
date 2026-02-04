@@ -1,43 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 import Searchbar from "./Searchbar";
 import StaggeredMenu from "../ui/StaggeredMenu";
+import TransitionLink from "../ui/TransitionLink";
+import { STAGGERED_MENU_ITEMS, SOCIAL_ITEMS } from "../../styles/constants";
 
 export default function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
 
-  // E-commerce focused menu items
-  const menuItems = [
-    { label: 'Home', ariaLabel: 'Go to home page', link: '/' },
-    { label: 'Shop', ariaLabel: 'Browse all products', link: '/shop' },
-    { label: 'Categories', ariaLabel: 'View product categories', link: '/categories' },
-    { label: 'Best Sellers', ariaLabel: 'View best selling products', link: '/best-sellers' },
-    { label: 'Cart', ariaLabel: 'View shopping cart', link: '/cart' },
-    { label: 'Track Orders', ariaLabel: 'Track your orders', link: '/track-orders' }
-  ];
-
-  const socialItems = [
-    { label: 'Instagram', link: 'https://instagram.com' },
-    { label: 'Facebook', link: 'https://facebook.com' },
-    { label: 'Twitter', link: 'https://twitter.com' }
-  ];
-
   return (
     <>
       {/* NAVBAR */}
-      <header className="fixed top-0 left-0 w-full z-50 text-black bg-white/80 backdrop-blur-sm">
-        <div className="h-16 px-4 md:px-8 lg:px-12 flex items-center justify-end w-full max-w-7xl mx-auto">
+      <header className="fixed top-0 w-full z-50 text-black bg-white/0 backdrop-blur-sm">
+        <div className="h-16 px-4 md:px-8 flex items-center justify-end w-full max-w-8xl mx-auto !pl-2">
           
           {/* Center: Logo */}
-          <Link href="/" className="text-lg font-bold tracking-widest absolute left-1/2 transform -translate-x-1/2">
+          <TransitionLink href="/" className="text-lg font-bold tracking-widest absolute left-1/2 transform -translate-x-1/2">
             necter<span className="text-[#fc6902]">.</span>
-          </Link>
+          </TransitionLink>
 
           {/* Right: Search & Cart */}
-          <div className="flex items-center gap-6 ml-auto">
+          <div className="flex items-center gap-6">
             <button
               onClick={() => setShowSearch(true)}
               className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors px-2 py-1"
@@ -45,7 +30,7 @@ export default function Navbar() {
               Search
             </button>
             
-            <Link
+            <TransitionLink
               href="/cart"
               className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors flex items-center gap-2 px-2 py-1 relative"
             >
@@ -56,7 +41,7 @@ export default function Navbar() {
                   3
                 </span>
               </div>
-            </Link>
+            </TransitionLink>
           </div>
         </div>
       </header>
@@ -65,8 +50,8 @@ export default function Navbar() {
       <div className="fixed z-60">
         <StaggeredMenu
           position="left"
-          items={menuItems}
-          socialItems={socialItems}
+          items={STAGGERED_MENU_ITEMS}
+          socialItems={SOCIAL_ITEMS}
           displaySocials={true}
           displayItemNumbering={true}
           menuButtonColor="#000000"
