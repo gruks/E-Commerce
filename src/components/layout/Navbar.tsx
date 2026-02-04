@@ -61,8 +61,8 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* STAGGERED MENU COMPONENT - Always present, handles its own visibility */}
-      <div className="fixed inset-0 z-60">
+      {/* STAGGERED MENU COMPONENT - Fixed width, only blocks when open */}
+      <div className="fixed z-60">
         <StaggeredMenu
           position="left"
           items={menuItems}
