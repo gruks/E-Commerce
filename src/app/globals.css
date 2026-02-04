@@ -881,3 +881,139 @@ body {
 .dual-range-slider__input::-webkit-slider-thumb:active {
   transform: scale(1.15);
 }
+/* Category Cards Styling */
+.category-card {
+  width: 100%;
+  max-width: 100%;
+}
+
+.category-card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+/* New Category Card Wrapper Styling */
+.category-card-wrapper {
+  display: block;
+  text-decoration: none;
+}
+
+.category-image-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.category-card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+}
+
+/* Hover effect for image - polygon shape change */
+.category-card-wrapper:hover .category-card-image {
+  clip-path: polygon(0% 10px, 100% 0%, 100% 100%, 0% 100%);
+  transform: scale(1.05);
+}
+
+/* Category title with animated underline */
+.category-title {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 4px;
+}
+
+.category-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--brand-primary);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover effect for title underline */
+.category-card-wrapper:hover .category-title::after {
+  width: 100%;
+}
+
+.category-card-wrapper:hover .category-title {
+  color: var(--brand-primary);
+}
+
+/* Categories Grid Responsive */
+.categories-grid {
+  display: grid;
+  gap: 1.5rem;
+  /* Default: 1 column for mobile */
+  grid-template-columns: 1fr;
+}
+
+/* Small screens: 2 columns for screens 481px to 767px */
+@media (min-width: 481px) and (max-width: 767px) {
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .category-card {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .category-card-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+}
+
+/* Tablet and up: 3 columns */
+@media (min-width: 768px) {
+  .categories-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .category-card {
+    max-width: 100%;
+  }
+  
+  .category-card-image {
+    height: 200px;
+    object-fit: cover;
+  }
+}
+
+/* Large screens: 4 columns */
+@media (min-width: 1280px) {
+  .categories-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .category-card {
+    max-width: 100%;
+  }
+  
+  .category-card-image {
+    height: 200px;
+    object-fit: cover;
+  }
+}
+
+/* Ensure cards fill available space on mobile */
+@media (max-width: 480px) {
+  .category-card {
+    width: 100%;
+  }
+  
+  .category-card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+}
