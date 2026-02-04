@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { Filter, Grid3X3, List, ChevronDown } from "lucide-react";
+import { useState, useCallback } from "react";
+import { Filter } from "lucide-react";
 import { usePageRevealer } from "../../components/ui/PageTransition";
-import ProductGrid from "../../components/ui/ProductGrid";
 import ProductCard from "../../components/ui/ProductCard";
+import ProductFilters from "../../components/ui/ProductFilters";
+import MobileFilterOverlay from "../../components/ui/MobileFilterOverlay";
+import { useProductFilters } from "../../hooks/useProductFilters";
 import { Product } from "../../types/product";
 
-// Mock product data with the new structure
+// Enhanced mock product data with filter properties - All products in 3-column layout
 const products: Product[] = [
   {
     id: "1",
@@ -17,7 +19,13 @@ const products: Product[] = [
     rating: 4,
     imageFront: "/placeholder.svg",
     imageBack: "/placeholder.svg",
-    hasSizes: false
+    hasSizes: false,
+    category: "Skin",
+    step: "Cleanse",
+    productType: "Cleanser",
+    concern: "Acne",
+    ingredient: "BHA / Salicylic Acid",
+    availability: true
   },
   {
     id: "2",
@@ -27,7 +35,13 @@ const products: Product[] = [
     rating: 5,
     imageFront: "/placeholder.svg",
     imageBack: "/placeholder.svg",
-    hasSizes: false
+    hasSizes: false,
+    category: "Skin",
+    step: "SPF",
+    productType: "SPF",
+    concern: "Sun Protection",
+    ingredient: "UV Filters",
+    availability: true
   },
   {
     id: "3",
@@ -37,7 +51,13 @@ const products: Product[] = [
     rating: 4,
     imageFront: "/placeholder.svg",
     imageBack: "/placeholder.svg",
-    hasSizes: false
+    hasSizes: false,
+    category: "Skin",
+    step: "Moisturize",
+    productType: "Moisturizer",
+    concern: "Dry Skin",
+    ingredient: "Vitamin B5",
+    availability: true
   },
   {
     id: "4",
@@ -47,7 +67,13 @@ const products: Product[] = [
     rating: 5,
     imageFront: "/placeholder.svg",
     imageBack: "/placeholder.svg",
-    hasSizes: false
+    hasSizes: false,
+    category: "Skin",
+    step: "Treat",
+    productType: "Serum",
+    concern: "Dry Skin",
+    ingredient: "Hyaluronic Acid",
+    availability: true
   },
   {
     id: "5",
@@ -57,7 +83,13 @@ const products: Product[] = [
     rating: 4,
     imageFront: "/placeholder.svg",
     imageBack: "/placeholder.svg",
-    hasSizes: false
+    hasSizes: false,
+    category: "Skin",
+    step: "Treat",
+    productType: "Serum",
+    concern: "Acne",
+    ingredient: "Niacinamide",
+    availability: false
   },
   {
     id: "6",
@@ -67,7 +99,13 @@ const products: Product[] = [
     rating: 5,
     imageFront: "/placeholder.svg",
     imageBack: "/placeholder.svg",
-    hasSizes: false
+    hasSizes: false,
+    category: "Skin",
+    step: "Treat",
+    productType: "Serum",
+    concern: "Anti-aging",
+    ingredient: "Retinol",
+    availability: true
   },
   {
     id: "7",
@@ -77,7 +115,13 @@ const products: Product[] = [
     rating: 4,
     imageFront: "/placeholder.svg",
     imageBack: "/placeholder.svg",
-    hasSizes: false
+    hasSizes: false,
+    category: "Skin",
+    step: "Tone",
+    productType: "Toner",
+    concern: "Uneven / Bumpy Texture",
+    ingredient: "AHA",
+    availability: true
   },
   {
     id: "8",
@@ -87,7 +131,13 @@ const products: Product[] = [
     rating: 5,
     imageFront: "/placeholder.svg",
     imageBack: "/placeholder.svg",
-    hasSizes: false
+    hasSizes: false,
+    category: "Body",
+    step: "Moisturize",
+    productType: "Body Lotion",
+    concern: "Dry Skin",
+    ingredient: "Ceramides",
+    availability: true
   }
 ];
 
@@ -96,20 +146,24 @@ function ShopPage() {
   usePageRevealer();
   
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [sortBy, setSortBy] = useState('featured');
 
-  const categories = [
-    { id: 'all', name: 'All Products', count: products.length },
-    { id: 'skincare', name: 'Skincare', count: 6 },
-    { id: 'suncare', name: 'Sun Care', count: 2 }
-  ];
+  // Use the product filters hook
+  const {
+    filteredProducts,
+    filterGroups,
+    sortOptions,
+    priceRange,
+    handleFilterChange,
+    getActiveFilterCount
+  } = useProductFilters({ products });
+
+  // Memoize the filter change handler to prevent unnecessary re-renders
+  const memoizedHandleFilterChange = useCallback(handleFilterChange, [handleFilterChange]);
 
   return (
     <div className="min-h-screen bg-bg-primary">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="mb-16 mt-12">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center mb-8">
             <h1 className="text-heading-1 text-gray-900 mb-4">Shop</h1>
@@ -119,88 +173,89 @@ function ShopPage() {
             </p>
           </div>
 
-          {/* Filters & Controls */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            {/* Category Filter */}
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    selectedCategory === category.id
-                      ? 'bg-black text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {category.name} ({category.count})
-                </button>
-              ))}
-            </div>
-
-            {/* Sort & View Controls */}
-            <div className="flex items-center gap-4">
-              {/* Sort Dropdown */}
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                >
-                  <option value="featured">Featured</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="rating">Highest Rated</option>
-                  <option value="newest">Newest</option>
-                </select>
-                <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-              </div>
-
-              {/* View Mode Toggle */}
-              <div className="flex border border-gray-300 rounded-lg overflow-hidden">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2 ${viewMode === 'grid' ? 'bg-black text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-                >
-                  <Grid3X3 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`p-2 ${viewMode === 'list' ? 'bg-black text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Filter Toggle */}
-              <button
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                <Filter className="w-4 h-4" />
-                Filters
-              </button>
-            </div>
+          {/* Mobile Filter Button */}
+          <div className="flex justify-end items-center">
+            <button
+              onClick={() => setIsFilterOpen(true)}
+              className="lg:hidden flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              <Filter className="w-4 h-4" />
+              Filters
+              {getActiveFilterCount() > 0 && (
+                <span className="bg-brand-primary text-white text-xs px-2 py-0.5 rounded-full">
+                  {getActiveFilterCount()}
+                </span>
+              )}
+            </button>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto py-8">
-        {/* Results Count */}
-        <div className="px-4 sm:px-6 mb-6">
-          <p className="text-sm text-gray-600">
-            Showing {products.length} products
-          </p>
-        </div>
+      <div className="container mx-auto py-8 pb-24">
+        <div className="flex gap-12 min-h-[calc(100vh-24rem)]">
+          {/* Desktop Filters Sidebar - Hidden on mobile */}
+          <div className="hidden lg:block w-80 flex-shrink-0">
+            <ProductFilters
+              filterGroups={filterGroups}
+              priceRange={priceRange}
+              sortOptions={sortOptions}
+              onFilterChange={memoizedHandleFilterChange}
+            />
+          </div>
 
-        {/* Product Grid */}
-        <ProductGrid>
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </ProductGrid>
+          {/* Products */}
+          <div className="flex-1 min-h-full">
+            {/* Results Count */}
+            <div className="mb-6">
+              <p className="text-sm text-gray-600">
+                Showing {filteredProducts.length} of {products.length} products
+                {getActiveFilterCount() > 0 && (
+                  <span className="ml-2 text-brand-primary">
+                    ({getActiveFilterCount()} filter{getActiveFilterCount() !== 1 ? 's' : ''} applied)
+                  </span>
+                )}
+              </p>
+            </div>
+
+            {/* Product Grid */}
+            {filteredProducts.length > 0 ? (
+              <div className="grid grid-3 min-h-[400px]">
+                {filteredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 min-h-[400px] flex flex-col justify-center">
+                <p className="text-body-large text-text-muted mb-4">
+                  No products found matching your filters.
+                </p>
+                <button
+                  onClick={() => memoizedHandleFilterChange({
+                    sortBy: "featured",
+                    selectedFilters: {},
+                    priceRange: { ...priceRange, currentMin: priceRange.min, currentMax: priceRange.max }
+                  })}
+                  className="btn btn-secondary"
+                >
+                  Clear all filters
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
+
+      {/* Mobile Filter Overlay */}
+      <MobileFilterOverlay
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        filterGroups={filterGroups}
+        priceRange={priceRange}
+        sortOptions={sortOptions}
+        onFilterChange={memoizedHandleFilterChange}
+        activeFilterCount={getActiveFilterCount()}
+      />
     </div>
   );
 }

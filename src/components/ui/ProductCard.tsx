@@ -52,8 +52,7 @@ export default function ProductCard({ product }: Props) {
       ref={cardRef}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
-      className="group bg-white rounded-xl p-4
-                  border border-neutral-200
+      className="group p-4
                  transition-shadow hover:shadow-lg"
     >
       {/* IMAGE */}
@@ -91,12 +90,12 @@ export default function ProductCard({ product }: Props) {
           {product.name}
         </h3>
 
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-neutral-500 mt-1">
           {product.subtitle}
         </p>
 
         {/* RATING */}
-        <div className="flex gap-1 text-xs text-black">
+        <div className="flex gap-1 text-xs text-black mt-1">
           {"★".repeat(product.rating)}
           {"☆".repeat(5 - product.rating)}
         </div>
@@ -108,7 +107,7 @@ export default function ProductCard({ product }: Props) {
 
         {/* BUTTON */}
         <button
-          className="w-full mt-3 py-2 rounded-md
+          className="w-full mt-3 py-2
                      bg-black text-white text-sm
                      hover:bg-neutral-800 transition"
         >

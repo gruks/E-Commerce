@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Search } from "lucide-react";
 import Searchbar from "./Searchbar";
 import StaggeredMenu from "../ui/StaggeredMenu";
 import TransitionLink from "../ui/TransitionLink";
@@ -22,12 +22,15 @@ export default function Navbar() {
           </TransitionLink>
 
           {/* Right: Search & Cart */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
             <button
               onClick={() => setShowSearch(true)}
-              className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors px-2 py-1"
+              className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors px-2 py-1 flex items-center"
             >
-              Search
+              {/* Search text - hidden on small screens */}
+              <span className="hidden sm:inline">Search</span>
+              {/* Search icon - shown on small screens */}
+              <Search className="w-4 h-4 sm:hidden" />
             </button>
             
             <TransitionLink

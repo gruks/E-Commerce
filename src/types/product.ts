@@ -7,4 +7,12 @@ export type Product = {
   imageFront: string;
   imageBack: string;
   hasSizes?: boolean;
+  // Filter properties
+  category?: string;
+  step?: string;
+  productType?: string;
+  concern?: string;
+  ingredient?: string;
+  availability?: boolean;
+  createdAt?: Date;
 };

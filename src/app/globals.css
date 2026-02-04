@@ -6,7 +6,6 @@
 
 * {
   box-sizing: border-box;
-  margin: 0;
 }
 
 :root {
@@ -49,6 +48,9 @@
   /* BUTTONS */
   --btn-primary-bg: var(--brand-primary);
   --btn-primary-text: #000000;
+
+  /* GRID SYSTEM */
+  --grid-gap: 2rem;
   --btn-secondary-bg: transparent;
   --btn-secondary-text: #000000;
   --btn-secondary-border: var(--border-default);
@@ -333,6 +335,11 @@ body {
   font-weight: 300;
 }
 
+/* Square input variant */
+.input-square {
+  border-radius: 0;
+}
+
 /* Badge Styles */
 .badge {
   display: inline-flex;
@@ -370,12 +377,21 @@ body {
   to { transform: translateX(0); }
 }
 
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
 }
 
 .animate-slide-in {
   animation: slideIn 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
 }
 
 /* Loading Skeleton */
@@ -393,7 +409,7 @@ body {
 /* Utility classes */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -679,4 +695,189 @@ body {
   position: relative;
   display: inline-block;
   will-change: transform;
+}
+
+/* Custom Grid System */
+.grid-3 {
+  --visible-cols: 3;
+}
+
+.grid {
+  --col-gap: var(--grid-gap);
+  --col-size: calc((100% - var(--col-gap) * (var(--visible-cols) - 1)) / var(--visible-cols));
+  display: grid;
+  align-items: start;
+  grid-gap: var(--col-gap);
+  grid-template-columns: repeat(var(--visible-cols), 1fr);
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 640px) {
+  :root {
+    --grid-gap: 1.5rem;
+  }
+  
+  .grid-3 {
+    --visible-cols: 1;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  :root {
+    --grid-gap: 1.75rem;
+  }
+  
+  .grid-3 {
+    --visible-cols: 2;
+  }
+}
+
+@media (min-width: 1025px) {
+  :root {
+    --grid-gap: 2.5rem;
+  }
+  
+  .grid-3 {
+    --visible-cols: 3;
+  }
+}
+/* Price Range Slider Styles */
+.price-range {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.price-inputs {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.price-field {
+  flex: 1;
+  position: relative;
+}
+
+.price-field .field__currency {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  z-index: 1;
+}
+
+.price-field .field__input {
+  width: 100%;
+  border: 2px solid var(--border-default);
+  border-radius: 0;
+  background: white;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: right;
+  transition: all 0.2s ease;
+}
+
+.price-field .field__input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px rgba(252, 105, 2, 0.1);
+}
+
+.price-field .field__input::placeholder {
+  color: var(--text-subtle);
+  font-weight: 400;
+}
+
+.price-to-label {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  white-space: nowrap;
+  margin: 0 0.5rem;
+}
+
+/* Dual Range Slider */
+/* Container */
+.dual-range-slider {
+  position: relative;
+  width: 100%;
+  height: 24px;
+}
+
+/* Track (3px height) */
+.dual-range-slider__track {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 3px;
+  width: 100%;
+  background-color: #d4d4d4; /* neutral-300 */
+  border-radius: 9999px;
+}
+
+/* Active range */
+.dual-range-slider__range {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 3px;
+  background-color: #000;
+  border-radius: 9999px;
+}
+
+/* Range inputs */
+.dual-range-slider__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: none;
+  pointer-events: none;
+  appearance: none;
+}
+
+/* Enable thumb interaction */
+.dual-range-slider__input::-webkit-slider-thumb {
+  pointer-events: auto;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dual-range-slider__input::-moz-range-thumb {
+  pointer-events: auto;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Remove default track */
+.dual-range-slider__input::-webkit-slider-runnable-track {
+  background: transparent;
+}
+
+.dual-range-slider__input::-moz-range-track {
+  background: transparent;
+}
+
+/* Optional polish (recommended) */
+.dual-range-slider__input::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.dual-range-slider__input::-webkit-slider-thumb:active {
+  transform: scale(1.15);
 }

@@ -12,14 +12,33 @@ interface ClientWrapperProps {
 export default function ClientWrapper({ 
   children, 
   showLoading = true, 
-  loadingDuration = 3500 
+  loadingDuration = 2500 
 }: ClientWrapperProps) {
-  const [isLoading, setIsLoading] = useState(showLoading);
+  const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    
+    // Check if this is a page refresh/reload
+    const isPageRefresh = () => {
+      // Check if performance navigation API is available
+      if (typeof window !== 'undefined' && window.performance) {
+        const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+        return navigation.type === 'reload';
+      }
+      
+      // Fallback: check if page was accessed directly (not from navigation)
+      return document.referrer === '' || document.referrer === window.location.href;
+    };
+
+    // Show loading screen on page refresh or initial load
+    if (showLoading && (isPageRefresh() || !sessionStorage.getItem('hasVisited'))) {
+      setIsLoading(true);
+      // Mark that user has visited (to avoid loading on navigation)
+      sessionStorage.setItem('hasVisited', 'true');
+    }
+  }, [showLoading]);
 
   const handleLoadingComplete = () => {
     setIsLoading(false);
