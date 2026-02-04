@@ -616,3 +616,22 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.letter,
+.word,
+.line {
+  position: relative;
+  display: inline-block;
+  will-change: transform;
+}
+
+.revealer {
+  position:fixed;
+  top: 0;
+  left : 0;
+  width: 100vw;
+  height: 100svh;
+  tansform-origin: center top;
+  pointer-events: none;
+  z-index: 2;
+}

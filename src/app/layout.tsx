@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { League_Spartan, Quicksand } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/src/components/layout/Navbar";
-import { Footer } from "@/src/components/layout/Footer";
+import Footer from "@/src/components/layout/Footer";
 
 const leagueSpartan = League_Spartan({
   subsets: ["latin"],
