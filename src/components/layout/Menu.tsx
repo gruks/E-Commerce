@@ -1,22 +1,28 @@
 "use client";
 
-import { NAVBAR_ITEMS } from "@/src/styles/constants";
-import StaggeredMenu from "../ui/StaggeredMenu";
+import { useState } from 'react';
+import { ShoppingBag } from "lucide-react";
+import Link from "next/link";
+import StaggeredMenu from '../ui/StaggeredMenu';
 
 interface MenuProps {
-  open: boolean;
-  onClose: () => void;
+  open?: boolean;
+  onClose?: () => void;
 }
 
 export default function Menu({ open, onClose }: MenuProps) {
-  // Transform NAVBAR_ITEMS to match StaggeredMenu interface
-  const menuItems = NAVBAR_ITEMS.map(item => ({
-    label: item.label,
-    ariaLabel: `Go to ${item.label.toLowerCase()}`,
-    link: item.href || '#'
-  }));
+  const [showSearch, setShowSearch] = useState(false);
 
-  // Social media items
+  // E-commerce focused menu items
+  const menuItems = [
+    { label: 'Home', ariaLabel: 'Go to home page', link: '/' },
+    { label: 'Shop', ariaLabel: 'Browse all products', link: '/shop' },
+    { label: 'Categories', ariaLabel: 'View product categories', link: '/categories' },
+    { label: 'Best Sellers', ariaLabel: 'View best selling products', link: '/best-sellers' },
+    { label: 'Cart', ariaLabel: 'View shopping cart', link: '/cart' },
+    { label: 'Track Orders', ariaLabel: 'Track your orders', link: '/track-orders' }
+  ];
+
   const socialItems = [
     { label: 'Instagram', link: 'https://instagram.com' },
     { label: 'Facebook', link: 'https://facebook.com' },
@@ -24,31 +30,62 @@ export default function Menu({ open, onClose }: MenuProps) {
   ];
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 45, pointerEvents: open ? 'auto' : 'none' }}>
+    <>
       <StaggeredMenu
         position="left"
         items={menuItems}
         socialItems={socialItems}
-        displaySocials
+        displaySocials={true}
         displayItemNumbering={true}
-        menuButtonColor="#ffffff"
-        openMenuButtonColor="#fff"
-        changeMenuColorOnOpen={true}
-        colors={['#B19EEF', '#5227FF']}
-        logoUrl="/path-to-your-logo.svg"
-        accentColor="#5227FF"
-        onMenuOpen={() => console.log('Menu opened')}
-        onMenuClose={() => console.log('Menu closed')} isFixed={false}      />
+        menuButtonColor="#000000"
+        openMenuButtonColor="#000000"
+        changeMenuColorOnOpen={false}
+        colors={['#f8f9fa', '#ffffff']}
+        logoUrl="/logo.png"
+        accentColor="#fc6902"
+        isFixed={true}
+        closeOnClickAway={true}
+        onMenuOpen={onClose}
+        onMenuClose={onClose}
+      />
       
-      {/* Hide the StaggeredMenu's built-in button */}
-      <style jsx>{`
-        :global(.staggered-menu-header) {
-          display: none !important;
-        }
-        :global(.sm-panel-item) {
-          font-size: 2.5rem !important;
-        }
-      `}</style>
-    </div>
+      {/* Custom navbar overlay with proper organization */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm border-b border-gray-200/50">
+        <div className="flex items-center justify-between px-4 md:px-8 lg:px-12 h-16 max-w-7xl mx-auto">
+          
+          {/* Left: Search */}
+          <button
+            onClick={() => setShowSearch(true)}
+            className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors px-3 py-2 rounded-md"
+            aria-label="Open search"
+          >
+            Search
+          </button>
+
+          {/* Center: Logo */}
+          <Link 
+            href="/" 
+            className="text-xl font-bold tracking-wider text-black hover:text-[#fc6902] transition-colors absolute left-1/2 transform -translate-x-1/2"
+          >
+            necter<span className="text-[#fc6902]">.</span>
+          </Link>
+
+          {/* Right: Cart */}
+          <Link
+            href="/cart"
+            className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors flex items-center gap-2 px-3 py-2 relative rounded-md"
+            aria-label="View cart"
+          >
+            <div className="relative">
+              <ShoppingBag className="w-5 h-5" />
+              {/* Cart Counter */}
+              <span className="absolute -top-2 -right-2 bg-[#fc6902] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium min-w-[20px]">
+                3
+              </span>
+            </div>
+          </Link>
+        </div>
+      </div>
+    </>
   );
 }
