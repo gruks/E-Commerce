@@ -17,11 +17,15 @@ export default function Navbar() {
   const headerRef = useRef<HTMLElement>(null);
 
   const handleMenuOpen = () => {
+    console.log('handleMenuOpen called');
     setShowMenu(true);
+    console.log('showMenu set to true');
   };
 
   const handleMenuClose = () => {
+    console.log('handleMenuClose called');
     setShowMenu(false);
+    console.log('showMenu set to false');
   };
 
   // GSAP ScrollTrigger for backdrop blur
@@ -120,10 +124,11 @@ export default function Navbar() {
               <div className="relative">
                 <ShoppingBag className="w-4 h-4" />
                 {/* Cart Counter */}
-                <span className="absolute -top-2 -right-2 bg-[#fc6902] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium">
+                <span className="absolute -top-2 -right-2 bg-[#fc6902] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
                   3
                 </span>
               </div>
+              <span>Cart</span>
             </Link>
           </div>
         </div>

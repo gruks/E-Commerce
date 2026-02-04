@@ -8,9 +8,12 @@ import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { SplitText } from "gsap/SplitText"; 
+import { useRevealer } from "../hooks/useRevealer"
 
 // Hero Section Component
 const HeroSection = () => {
+  useRevealer();
+  
   const taglineRef = useRef<HTMLHeadingElement>(null);
   const paragrap = useRef<HTMLHeadingElement>(null);
 
@@ -26,7 +29,7 @@ const HeroSection = () => {
       duration: 1.8,
       ease: 'expo.out',
       stagger: 0.06,
-      delay: 0.5
+      delay: 0.2
     })
 
     gsap.from(paragraphSplit.lines, {
