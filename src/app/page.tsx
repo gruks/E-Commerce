@@ -7,50 +7,37 @@ import StarBorder from "../components/ui/StarBorder";
 import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { SplitText } from "gsap/SplitText"; 
 
 // Hero Section Component
 const HeroSection = () => {
   const taglineRef = useRef<HTMLHeadingElement>(null);
+  const paragrap = useRef<HTMLHeadingElement>(null);
 
   useGSAP(() => {
     if (!taglineRef.current) return;
 
-    // Split the text into individual characters
-    const text = taglineRef.current.textContent || "";
-    const chars = text.split("").map((char, index) => 
-      `<span key="${index}" style="display: inline-block;">${char === " " ? "&nbsp;" : char}</span>`
-    ).join("");
-    
-    taglineRef.current.innerHTML = chars;
-    
-    // Get all character spans
-    const charElements = taglineRef.current.querySelectorAll("span");
-    
-    // Set initial state - characters start from bottom
-    gsap.set(charElements, {
-      opacity: 0,
-      y: 100, // Start from bottom (100px below)
-      x: () => gsap.utils.random(-20, 20), // Slight horizontal randomness
-      rotation: () => gsap.utils.random(-10, 10), // Subtle rotation
-      scale: 0.8 // Slightly smaller
-    });
+    const heroSplit = new SplitText(taglineRef.current, { type: 'chars, words'});
+    const paragraphSplit = new SplitText(paragrap.current, { type: 'lines'});
 
-    // Animate to final positions with smooth ease-in
-    gsap.to(charElements, {
-      opacity: 1,
-      y: 0, // Move to original position
-      x: 0, // Center horizontally
-      rotation: 0, // No rotation
-      scale: 1, // Normal size
-      duration: 1.5, // Slower, smoother animation
-      ease: "power4.out", // Smooth ease-in effect
-      stagger: {
-        amount: 1.5, // Longer stagger for smoother effect
-        from: "random" // Random order
-      },
-      delay: 0.2 // Shorter initial delay
-    });
-  }, { scope: taglineRef });
+    gsap.from(heroSplit.chars, {
+      opacity: 0,
+      yPercent: 100,
+      duration: 1.8,
+      ease: 'expo.out',
+      stagger: 0.06,
+      delay: 0.5
+    })
+
+    gsap.from(paragraphSplit.lines, {
+      opacity: 0,
+      yPercent: 100,
+      duration: 1.8,
+      ease: 'expo.out',
+      stagger: 0.06,
+      delay: 1
+    })
+  }, []);
 
   return (
     <section className="min-h-screen bg-primary from-gray-100 via-gray-50 to-white relative overflow-hidden" 
@@ -96,7 +83,7 @@ const HeroSection = () => {
 
       </div>
       <div className="promo-description">
-        <span className="font-bold ">
+        <span className="font-bold" ref={paragrap}>
             BEAUTY
         </span>
       </div>
