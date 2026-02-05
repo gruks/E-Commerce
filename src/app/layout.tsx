@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/src/components/layout/Navbar";
 import Footer from "@/src/components/layout/Footer";
 import ClientWrapper from "@/src/components/ui/ClientWrapper";
+import { GlobalCartDrawer } from "@/src/components/layout/GlobalCartDrawer";
 import { ViewTransitions } from "next-view-transitions";
 
 const leagueSpartan = League_Spartan({
@@ -40,6 +41,7 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
+            <GlobalCartDrawer />
           </ClientWrapper>
         </body>
       </html>

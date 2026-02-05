@@ -1017,3 +1017,125 @@ body {
     object-fit: cover;
   }
 }
+
+/* Cart Footer Styles */
+.cart__footer > * + * {
+  margin-top: 4rem;
+}
+
+.cart__note {
+  display: block;
+}
+
+.field {
+  position: relative;
+  width: 100%;
+  display: flex;
+}
+
+/* Cart Footer Responsive */
+@media screen and (min-width: 750px) {
+  .cart__footer {
+    display: flex;
+    justify-content: space-between;
+    grid-template-columns: 1fr auto;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .cart__footer {
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+}
+
+@media (max-width: 1023px) {
+  .cart__footer > * + * {
+    margin-top: 2rem;
+  }
+}
+/* Cart Drawer Specific Styles */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Animation utilities for cart drawer */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.animate-slide-out-right {
+  animation: slideOutRight 0.3s ease-in;
+}
+
+/* Focus styles for cart drawer */
+.cart-drawer-focus:focus {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+/* Mobile responsive adjustments for cart drawer */
+@media (max-width: 640px) {
+  .cart-drawer-mobile {
+    width: 100vw;
+    max-width: none;
+  }
+}
+
+/* Radio Button Styles for TrackingEntry */
+.radio-item {
+  @apply flex items-center gap-2 cursor-pointer select-none;
+}
+
+/* Hide native radio */
+.radio-item input {
+  @apply hidden;
+}
+
+/* Outer circle */
+.radio-circle {
+  @apply w-5 h-5 rounded-full border-2 border-black flex items-center justify-center transition;
+}
+
+/* Inner white tick */
+.radio-circle::after {
+  content: "";
+  @apply w-2.5 h-2.5 bg-white rounded-full scale-0 transition;
+}
+
+/* Checked State */
+.radio-item input:checked + .radio-circle {
+  @apply bg-black;
+}
+
+.radio-item input:checked + .radio-circle::after {
+  @apply scale-100;
+}
+
+/* Label text spacing */
+.radio-text {
+  @apply text-sm text-gray-800;
+}

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { ShoppingBag, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import Searchbar from "./Searchbar";
 import StaggeredMenu from "../ui/StaggeredMenu";
 import TransitionLink from "../ui/TransitionLink";
+import { CartIcon } from "./CartIcon";
 import { STAGGERED_MENU_ITEMS, SOCIAL_ITEMS } from "../../styles/constants";
 
 export default function Navbar() {
@@ -33,18 +34,7 @@ export default function Navbar() {
               <Search className="w-4 h-4 sm:hidden" />
             </button>
             
-            <TransitionLink
-              href="/cart"
-              className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors flex items-center gap-2 px-2 py-1 relative"
-            >
-              <div className="relative">
-                <ShoppingBag className="w-4 h-4" />
-                {/* Cart Counter */}
-                <span className="absolute -top-2 -right-2 bg-[#fc6902] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium">
-                  3
-                </span>
-              </div>
-            </TransitionLink>
+            <CartIcon className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors" />
           </div>
         </div>
       </header>

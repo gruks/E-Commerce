@@ -39,12 +39,7 @@ export const NAVBAR_ITEMS = [
     label: "Products",
     href: "/products",
     hasSubcategories: false
-  },
-  {
-    label: "Cart",
-    href: "/cart",
-    hasSubcategories: false
-  },
+  }
 ] as const;
 
 export const STAGGERED_MENU_ITEMS: StaggeredMenuItem[] = [
@@ -52,7 +47,6 @@ export const STAGGERED_MENU_ITEMS: StaggeredMenuItem[] = [
   { label: 'Shop', ariaLabel: 'Browse all products', link: '/shop' },
   { label: 'Categories', ariaLabel: 'View product categories', link: '/categories' },
   { label: 'Best Sellers', ariaLabel: 'View best selling products', link: '/best-sellers' },
-  { label: 'Cart', ariaLabel: 'View shopping cart', link: '/cart' },
   { label: 'Track Orders', ariaLabel: 'Track your orders', link: '/track-orders' }
 ];
 

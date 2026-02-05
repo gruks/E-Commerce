@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import StaggeredMenu from '../ui/StaggeredMenu';
+import { CartIcon } from './CartIcon';
 
 interface MenuProps {
   open?: boolean;
@@ -13,13 +13,12 @@ interface MenuProps {
 export default function Menu({ open, onClose }: MenuProps) {
   const [showSearch, setShowSearch] = useState(false);
 
-  // E-commerce focused menu items
+  // E-commerce focused menu items (removed cart from menu items)
   const menuItems = [
     { label: 'Home', ariaLabel: 'Go to home page', link: '/' },
     { label: 'Shop', ariaLabel: 'Browse all products', link: '/shop' },
     { label: 'Categories', ariaLabel: 'View product categories', link: '/categories' },
     { label: 'Best Sellers', ariaLabel: 'View best selling products', link: '/best-sellers' },
-    { label: 'Cart', ariaLabel: 'View shopping cart', link: '/cart' },
     { label: 'Track Orders', ariaLabel: 'Track your orders', link: '/track-orders' }
   ];
 
@@ -71,19 +70,7 @@ export default function Menu({ open, onClose }: MenuProps) {
           </Link>
 
           {/* Right: Cart */}
-          <Link
-            href="/cart"
-            className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors flex items-center gap-2 px-3 py-2 relative rounded-md"
-            aria-label="View cart"
-          >
-            <div className="relative">
-              <ShoppingBag className="w-5 h-5" />
-              {/* Cart Counter */}
-              <span className="absolute -top-2 -right-2 bg-[#fc6902] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium min-w-[20px]">
-                3
-              </span>
-            </div>
-          </Link>
+          <CartIcon className="text-sm font-medium tracking-wide" />
         </div>
       </div>
     </>
