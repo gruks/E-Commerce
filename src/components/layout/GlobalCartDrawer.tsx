@@ -2,24 +2,36 @@
 
 import { useEffect } from "react";
 import { useCartStore } from "@/src/store/cartStore";
+import { useAuth } from "@/src/contexts/AuthContext";
 import { CartDrawer } from "@/src/components/cart";
 
 export const GlobalCartDrawer = () => {
+  const { user, loading: authLoading } = useAuth();
   const {
     isCartOpen,
     isLoading,
     isUpdating,
     items,
-    appliedCoupon,
+    subtotal,
+    error,
     closeCart,
     updateQuantity,
     removeItem,
-    addItem,
-    applyCoupon,
-    getOrderSummary,
-    getPromotionProgress,
-    getSuggestedProducts
+    loadCart,
+    syncCartWithServer
   } = useCartStore();
+
+  // Load cart on component mount
+  useEffect(() => {
+    loadCart();
+  }, [loadCart]);
+
+  // Sync cart with server when user logs in
+  useEffect(() => {
+    if (user && !authLoading) {
+      syncCartWithServer(user.id);
+    }
+  }, [user, authLoading, syncCartWithServer]);
 
   // Handle ESC key to close cart
   useEffect(() => {
@@ -35,16 +47,12 @@ export const GlobalCartDrawer = () => {
     }
   }, [isCartOpen, closeCart]);
 
-  const handleAddSuggested = (product: any) => {
-    const cartItem = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      quantity: 1,
-      image: product.image,
-      inStock: true
-    };
-    addItem(cartItem);
+  const handleUpdateQuantity = async (productId: string, quantity: number) => {
+    await updateQuantity(productId, quantity);
+  };
+
+  const handleRemoveItem = async (productId: string) => {
+    await removeItem(productId);
   };
 
   const handleCheckout = () => {
@@ -87,19 +95,48 @@ export const GlobalCartDrawer = () => {
             <CartDrawer
               isOpen={isCartOpen}
               onClose={closeCart}
-              items={items}
-              suggestedProducts={getSuggestedProducts()}
-              promotionProgress={getPromotionProgress()}
-              orderSummary={getOrderSummary()}
-              onUpdateQuantity={updateQuantity}
-              onRemoveItem={removeItem}
-              onAddSuggested={handleAddSuggested}
-              onApplyCoupon={applyCoupon}
+              items={items.map(item => ({
+                id: item.productId,
+                name: item.product.name,
+                subtitle: item.product.description,
+                price: item.product.price,
+                quantity: item.quantity,
+                image: item.product.image_url,
+                inStock: item.product.stock_quantity > 0
+              }))}
+              suggestedProducts={[]} // TODO: Implement suggested products
+              promotionProgress={undefined} // TODO: Implement promotion progress
+              orderSummary={{
+                subtotal,
+                discount: 0,
+                estimatedTotal: subtotal,
+                tax: 0,
+                shipping: 0,
+                savings: 0
+              }}
+              onUpdateQuantity={handleUpdateQuantity}
+              onRemoveItem={handleRemoveItem}
+              onAddSuggested={() => {}} // TODO: Implement
+              onApplyCoupon={async () => {}} // TODO: Implement
               onCheckout={handleCheckout}
-              appliedCoupon={appliedCoupon}
+              appliedCoupon=""
               isLoading={isLoading}
               isUpdating={isUpdating}
             />
+            
+            {/* Error Display */}
+            {error && (
+              <div className="absolute bottom-4 left-4 right-4 bg-red-50 border border-red-200 text-red-700 px-4 py-2 text-sm">
+                {error}
+              </div>
+            )}
+
+            {/* Authentication Status */}
+            {user && (
+              <div className="absolute top-4 left-4 right-4 bg-green-50 border border-green-200 text-green-700 px-3 py-2 text-xs">
+                ✅ Signed in as {user.email?.split('@')[0]}
+              </div>
+            )}
           </div>
         </div>
       </div>

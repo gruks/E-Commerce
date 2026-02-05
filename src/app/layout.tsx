@@ -5,6 +5,7 @@ import Navbar from "@/src/components/layout/Navbar";
 import Footer from "@/src/components/layout/Footer";
 import ClientWrapper from "@/src/components/ui/ClientWrapper";
 import { GlobalCartDrawer } from "@/src/components/layout/GlobalCartDrawer";
+import { AuthProvider } from "@/src/contexts/AuthContext";
 import { ViewTransitions } from "next-view-transitions";
 
 const leagueSpartan = League_Spartan({
@@ -35,14 +36,16 @@ export default function RootLayout({
     <ViewTransitions>
       <html lang="en" className={`${leagueSpartan.variable} ${quicksand.variable}`}>
         <body className="antialiased">
-          <ClientWrapper showLoading={true} loadingDuration={2500}>
-            <Navbar />
-            <main className="!pt-18 md:!pt-20" style={{ paddingTop: '4rem' }}>
-              {children}
-            </main>
-            <Footer />
-            <GlobalCartDrawer />
-          </ClientWrapper>
+          <AuthProvider>
+            <ClientWrapper showLoading={true} loadingDuration={2500}>
+              <Navbar />
+              <main className="!pt-18 md:!pt-20" style={{ paddingTop: '4rem' }}>
+                {children}
+              </main>
+              <Footer />
+              <GlobalCartDrawer />
+            </ClientWrapper>
+          </AuthProvider>
         </body>
       </html>
     </ViewTransitions>

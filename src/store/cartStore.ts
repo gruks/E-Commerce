@@ -2,7 +2,9 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { CartItemType, SuggestedProduct, PromotionProgressType, OrderSummary } from '@/src/components/cart';
+import { Product } from '@/src/types/database';
+import { productsService } from '@/src/services/productsService';
+import { localCartService, LocalCartItem, LocalCartItemWithProduct } from '@/src/services/localCartService';
 
 interface CartState {
   // UI State
@@ -12,8 +14,11 @@ interface CartState {
   isAnimating: boolean;
   
   // Cart Data
-  items: CartItemType[];
-  appliedCoupon: string;
+  items: LocalCartItemWithProduct[];
+  subtotal: number;
+  itemCount: number;
+  totalQuantity: number;
+  error: string | null;
   
   // Actions
   openCart: () => void;
@@ -22,51 +27,18 @@ interface CartState {
   setAnimating: (animating: boolean) => void;
   
   // Cart Management
-  addItem: (item: CartItemType) => void;
-  updateQuantity: (id: string, quantity: number) => void;
-  removeItem: (id: string) => void;
-  clearCart: () => void;
-  applyCoupon: (code: string) => Promise<void>;
+  loadCart: () => Promise<void>;
+  addItem: (productId: string, quantity?: number) => Promise<void>;
+  updateQuantity: (productId: string, quantity: number) => Promise<void>;
+  removeItem: (productId: string) => Promise<void>;
+  clearCart: () => Promise<void>;
+  syncCartWithServer: (userId: string) => Promise<void>;
   
   // Computed Values
   getItemCount: () => number;
-  getOrderSummary: () => OrderSummary;
-  getPromotionProgress: () => PromotionProgressType | undefined;
-  getSuggestedProducts: () => SuggestedProduct[];
+  getTotalQuantity: () => number;
+  getSubtotal: () => number;
 }
-
-const TAX_RATE = 0.08;
-
-const formatCurrency = (value: number) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD"
-  }).format(value);
-
-// Mock suggested products
-const mockSuggestedProducts: SuggestedProduct[] = [
-  {
-    id: "s1",
-    name: "Vitamin C Brightening Serum",
-    price: 29.99,
-    image: "/placeholder.svg",
-    rating: 4.8
-  },
-  {
-    id: "s2",
-    name: "Hyaluronic Acid Moisturizer",
-    price: 24.99,
-    image: "/placeholder.svg",
-    rating: 4.6
-  },
-  {
-    id: "s3",
-    name: "SPF 50 Sunscreen",
-    price: 27.99,
-    image: "/placeholder.svg",
-    rating: 4.9
-  }
-];
 
 export const useCartStore = create<CartState>()(
   persist(
@@ -77,7 +49,10 @@ export const useCartStore = create<CartState>()(
       isUpdating: false,
       isAnimating: false,
       items: [],
-      appliedCoupon: '',
+      subtotal: 0,
+      itemCount: 0,
+      totalQuantity: 0,
+      error: null,
 
       // UI Actions
       openCart: () => {
@@ -109,144 +84,199 @@ export const useCartStore = create<CartState>()(
       setAnimating: (animating: boolean) => set({ isAnimating: animating }),
 
       // Cart Management
-      addItem: (newItem: CartItemType) => {
-        set((state) => {
-          const existingItem = state.items.find(item => item.id === newItem.id);
-          
-          if (existingItem) {
-            // Update quantity if item exists
-            return {
-              items: state.items.map(item =>
-                item.id === newItem.id
-                  ? { ...item, quantity: item.quantity + newItem.quantity }
-                  : item
-              )
-            };
-          } else {
-            // Add new item
-            return {
-              items: [...state.items, newItem]
-            };
-          }
-        });
-      },
-
-      updateQuantity: (id: string, quantity: number) => {
-        if (quantity <= 0) {
-          get().removeItem(id);
-          return;
-        }
-
-        set((state) => ({
-          items: state.items.map(item =>
-            item.id === id ? { ...item, quantity } : item
-          )
-        }));
-      },
-
-      removeItem: (id: string) => {
-        set((state) => ({
-          items: state.items.filter(item => item.id !== id)
-        }));
-      },
-
-      clearCart: () => {
-        set({
-          items: [],
-          appliedCoupon: ''
-        });
-      },
-
-      applyCoupon: async (code: string) => {
-        set({ isLoading: true });
+      loadCart: async () => {
+        set({ isLoading: true, error: null });
         
         try {
-          // Simulate API call
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          const cartItems = localCartService.getCartItems();
+          const itemsWithProducts: LocalCartItemWithProduct[] = [];
           
-          // Mock coupon validation
-          const validCoupons = ['SAVE10', 'WELCOME20', 'FIRST15'];
-          
-          if (validCoupons.includes(code.toUpperCase())) {
-            set({ appliedCoupon: code.toUpperCase() });
-          } else {
-            throw new Error('Invalid coupon code');
+          // Fetch product details for each cart item
+          for (const item of cartItems) {
+            const { data: product, error } = await productsService.getProductById(item.productId);
+            
+            if (product && !error) {
+              itemsWithProducts.push({
+                ...item,
+                product
+              });
+            } else {
+              // Remove invalid items from cart
+              localCartService.removeFromCart(item.productId);
+            }
           }
-        } finally {
-          set({ isLoading: false });
+          
+          const subtotal = itemsWithProducts.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+          const itemCount = itemsWithProducts.length;
+          const totalQuantity = itemsWithProducts.reduce((sum, item) => sum + item.quantity, 0);
+
+          set({
+            items: itemsWithProducts,
+            subtotal,
+            itemCount,
+            totalQuantity,
+            isLoading: false,
+            error: null
+          });
+        } catch (error) {
+          console.error('Error loading cart:', error);
+          set({ 
+            error: error instanceof Error ? error.message : 'Failed to load cart',
+            isLoading: false 
+          });
+        }
+      },
+
+      addItem: async (productId: string, quantity = 1) => {
+        set({ isUpdating: true, error: null });
+        
+        try {
+          // Check if product exists and has stock
+          const { data: product, error } = await productsService.getProductById(productId);
+          
+          if (error || !product) {
+            set({ error: 'Product not found', isUpdating: false });
+            return;
+          }
+
+          if (product.stock_quantity < quantity) {
+            set({ error: `Only ${product.stock_quantity} items available in stock`, isUpdating: false });
+            return;
+          }
+
+          // Add to localStorage
+          localCartService.addToCart(productId, quantity);
+          
+          // Reload cart to get updated data
+          await get().loadCart();
+          set({ isUpdating: false });
+        } catch (error) {
+          console.error('Error adding item to cart:', error);
+          set({ 
+            error: error instanceof Error ? error.message : 'Failed to add item',
+            isUpdating: false 
+          });
+        }
+      },
+
+      updateQuantity: async (productId: string, quantity: number) => {
+        set({ isUpdating: true, error: null });
+        
+        try {
+          if (quantity <= 0) {
+            await get().removeItem(productId);
+            return;
+          }
+
+          // Check stock availability
+          const { data: product, error } = await productsService.getProductById(productId);
+          
+          if (error || !product) {
+            set({ error: 'Product not found', isUpdating: false });
+            return;
+          }
+
+          if (product.stock_quantity < quantity) {
+            set({ error: `Only ${product.stock_quantity} items available in stock`, isUpdating: false });
+            return;
+          }
+
+          // Update in localStorage
+          localCartService.updateQuantity(productId, quantity);
+          
+          // Reload cart to get updated data
+          await get().loadCart();
+          set({ isUpdating: false });
+        } catch (error) {
+          console.error('Error updating cart item:', error);
+          set({ 
+            error: error instanceof Error ? error.message : 'Failed to update item',
+            isUpdating: false 
+          });
+        }
+      },
+
+      removeItem: async (productId: string) => {
+        set({ isUpdating: true, error: null });
+        
+        try {
+          // Remove from localStorage
+          localCartService.removeFromCart(productId);
+          
+          // Reload cart to get updated data
+          await get().loadCart();
+          set({ isUpdating: false });
+        } catch (error) {
+          console.error('Error removing cart item:', error);
+          set({ 
+            error: error instanceof Error ? error.message : 'Failed to remove item',
+            isUpdating: false 
+          });
+        }
+      },
+
+      clearCart: async () => {
+        set({ isUpdating: true, error: null });
+        
+        try {
+          localCartService.clearCart();
+          
+          set({
+            items: [],
+            subtotal: 0,
+            itemCount: 0,
+            totalQuantity: 0,
+            isUpdating: false,
+            error: null
+          });
+        } catch (error) {
+          console.error('Error clearing cart:', error);
+          set({ 
+            error: error instanceof Error ? error.message : 'Failed to clear cart',
+            isUpdating: false 
+          });
+        }
+      },
+
+      // Sync cart with server when user logs in (future enhancement)
+      syncCartWithServer: async (userId: string) => {
+        // This function can be called when user logs in
+        // to sync localStorage cart with server cart
+        try {
+          const localItems = localCartService.getCartItems();
+          
+          // TODO: Implement server sync logic here
+          // For now, we'll just keep using localStorage
+          console.log('Cart sync with server for user:', userId, 'Items:', localItems);
+          
+          // Reload cart to ensure consistency
+          await get().loadCart();
+        } catch (error) {
+          console.error('Error syncing cart with server:', error);
         }
       },
 
       // Computed Values
       getItemCount: () => {
-        const { items } = get();
-        return items.reduce((sum, item) => sum + item.quantity, 0);
+        const { itemCount } = get();
+        return itemCount;
       },
 
-      getOrderSummary: (): OrderSummary => {
-        const { items, appliedCoupon } = get();
-        const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        
-        let discount = 0;
-        if (appliedCoupon === 'SAVE10') discount = subtotal * 0.1;
-        else if (appliedCoupon === 'WELCOME20') discount = subtotal * 0.2;
-        else if (appliedCoupon === 'FIRST15') discount = subtotal * 0.15;
-        
-        const tax = subtotal * TAX_RATE;
-        const estimatedTotal = subtotal - discount + tax;
-        
-        return {
-          subtotal,
-          discount,
-          estimatedTotal,
-          tax,
-          shipping: 0,
-          savings: discount
-        };
+      getTotalQuantity: () => {
+        const { totalQuantity } = get();
+        return totalQuantity;
       },
 
-      getPromotionProgress: (): PromotionProgressType | undefined => {
-        const { items } = get();
-        const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        
-        if (subtotal < 50) {
-          return {
-            current: subtotal,
-            target: 50,
-            message: "for free shipping",
-            nextMilestone: {
-              amount: 50 - subtotal,
-              reward: "Free shipping"
-            }
-          };
-        } else if (subtotal < 100) {
-          return {
-            current: subtotal,
-            target: 100,
-            message: "for 10% off your order",
-            nextMilestone: {
-              amount: 100 - subtotal,
-              reward: "10% discount"
-            }
-          };
-        }
-        
-        return undefined;
-      },
-
-      getSuggestedProducts: () => {
-        const { items } = get();
-        // Filter out products already in cart
-        return mockSuggestedProducts.filter(
-          product => !items.some(item => item.id === product.id)
-        );
+      getSubtotal: () => {
+        const { subtotal } = get();
+        return subtotal;
       }
     }),
     {
       name: 'cart-storage',
       partialize: (state) => ({
-        items: state.items,
-        appliedCoupon: state.appliedCoupon
+        // Only persist UI state, cart data comes from localStorage
+        isCartOpen: state.isCartOpen
       })
     }
   )

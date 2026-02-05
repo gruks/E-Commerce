@@ -3,13 +3,13 @@
 import { memo } from 'react';
 import Image from 'next/image';
 import { ChevronRight, Package } from 'lucide-react';
-import { Order } from '@/src/types/order';
+import { OrderWithItems } from '@/src/types/database';
 import { OrderStatusBadge } from './OrderStatusBadge';
 
 interface OrderCardProps {
-  order: Order;
+  order: OrderWithItems;
   isSelected?: boolean;
-  onClick: (order: Order) => void;
+  onClick: (order: OrderWithItems) => void;
 }
 
 const formatCurrency = (value: number) =>
@@ -38,8 +38,8 @@ export const OrderCard = memo(({ order, isSelected = false, onClick }: OrderCard
     }
   };
 
-  const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
-  const previewItems = order.items.slice(0, 3);
+  const itemCount = order.order_items.reduce((sum, item) => sum + item.quantity, 0);
+  const previewItems = order.order_items.slice(0, 3);
 
   return (
     <div
@@ -55,17 +55,17 @@ export const OrderCard = memo(({ order, isSelected = false, onClick }: OrderCard
       onKeyDown={handleKeyDown}
       tabIndex={0}
       role="button"
-      aria-label={`View details for order ${order.orderNumber}`}
+      aria-label={`View details for order ${order.id}`}
     >
       <div className="p-4">
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div>
             <h3 className="font-semibold text-gray-900 text-sm">
-              {order.orderNumber}
+              Order #{order.id.slice(-8).toUpperCase()}
             </h3>
             <p className="text-xs text-gray-500 mt-1">
-              {formatDate(order.date)}
+              {formatDate(order.created_at)}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -84,18 +84,18 @@ export const OrderCard = memo(({ order, isSelected = false, onClick }: OrderCard
                 style={{ zIndex: previewItems.length - index }}
               >
                 <Image
-                  src={item.image}
-                  alt={item.name}
+                  src={item.product.image_url}
+                  alt={item.product.name}
                   fill
                   className="object-cover"
                   sizes="32px"
                 />
               </div>
             ))}
-            {order.items.length > 3 && (
+            {order.order_items.length > 3 && (
               <div className="w-8 h-8 border-2 border-white bg-gray-200 flex items-center justify-center">
                 <span className="text-xs font-medium text-gray-600">
-                  +{order.items.length - 3}
+                  +{order.order_items.length - 3}
                 </span>
               </div>
             )}
@@ -111,14 +111,12 @@ export const OrderCard = memo(({ order, isSelected = false, onClick }: OrderCard
           <div className="text-sm">
             <span className="text-gray-500">Total: </span>
             <span className="font-semibold text-gray-900">
-              {formatCurrency(order.total)}
+              {formatCurrency(order.total_amount)}
             </span>
           </div>
-          {order.trackingNumber && (
-            <div className="text-xs text-gray-500">
-              Track: {order.trackingNumber}
-            </div>
-          )}
+          <div className="text-xs text-gray-500">
+            ID: {order.id.slice(-8)}
+          </div>
         </div>
       </div>
     </div>

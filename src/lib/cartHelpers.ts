@@ -1,77 +1,62 @@
 import { useCartStore } from '@/src/store/cartStore';
-import { CartItemType } from '@/src/components/cart';
-
-/**
- * Helper function to add a product to cart and open the cart drawer
- */
-export const addToCartAndOpen = (product: {
-  id: string;
-  name: string;
-  price: number;
-  image?: string;
-  subtitle?: string;
-  quantity?: number;
-}) => {
-  const { addItem, openCart } = useCartStore.getState();
-  
-  const cartItem: CartItemType = {
-    id: product.id,
-    name: product.name,
-    subtitle: product.subtitle,
-    price: product.price,
-    quantity: product.quantity || 1,
-    image: product.image || '/placeholder.svg',
-    inStock: true
-  };
-  
-  addItem(cartItem);
-  openCart();
-};
+import { useAuth } from '@/src/contexts/AuthContext';
 
 /**
  * Hook to get cart actions for components
+ * Works with both authenticated and guest users
  */
 export const useCartActions = () => {
-  const { addItem, openCart, toggleCart, closeCart } = useCartStore();
+  const { 
+    openCart, 
+    toggleCart, 
+    closeCart, 
+    addItem, 
+    updateQuantity, 
+    removeItem, 
+    clearCart,
+    loadCart
+  } = useCartStore();
   
-  const addToCart = (product: {
-    id: string;
-    name: string;
-    price: number;
-    image?: string;
-    subtitle?: string;
-    quantity?: number;
-  }) => {
-    const cartItem: CartItemType = {
-      id: product.id,
-      name: product.name,
-      subtitle: product.subtitle,
-      price: product.price,
-      quantity: product.quantity || 1,
-      image: product.image || '/placeholder.svg',
-      inStock: true
-    };
-    
-    addItem(cartItem);
+  const { user } = useAuth();
+  
+  const addToCart = async (productId: string, quantity = 1) => {
+    // Works for both authenticated and guest users
+    await addItem(productId, quantity);
   };
   
-  const addToCartAndOpenDrawer = (product: {
-    id: string;
-    name: string;
-    price: number;
-    image?: string;
-    subtitle?: string;
-    quantity?: number;
-  }) => {
-    addToCart(product);
+  const addToCartAndOpenDrawer = async (productId: string, quantity = 1) => {
+    await addToCart(productId, quantity);
     openCart();
+  };
+
+  const updateCartQuantity = async (productId: string, quantity: number) => {
+    await updateQuantity(productId, quantity);
+  };
+
+  const removeFromCart = async (productId: string) => {
+    await removeItem(productId);
+  };
+
+  const clearUserCart = async () => {
+    await clearCart();
+  };
+
+  const loadUserCart = async () => {
+    await loadCart();
   };
   
   return {
     addToCart,
     addToCartAndOpenDrawer,
+    updateQuantity: updateCartQuantity,
+    removeItem: removeFromCart,
+    clearCart: clearUserCart,
+    loadCart: loadUserCart,
     openCart,
     toggleCart,
-    closeCart
+    closeCart,
+    // Expose user state for components that need it
+    user,
+    isAuthenticated: !!user
   };
 };

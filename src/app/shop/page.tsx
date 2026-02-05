@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Filter } from "lucide-react";
 import { usePageRevealer } from "../../components/ui/PageTransition";
 import ProductCard from "../../components/ui/ProductCard";
@@ -8,144 +8,69 @@ import ProductFilters from "../../components/ui/ProductFilters";
 import MobileFilterOverlay from "../../components/ui/MobileFilterOverlay";
 import { useProductFilters } from "../../hooks/useProductFilters";
 import { Product } from "../../types/product";
+import { productsService } from "../../services/productsService";
+import { Product as DatabaseProduct } from "../../types/database";
 
-// Enhanced mock product data with filter properties - All products in 3-column layout
-const products: Product[] = [
-  {
-    id: "1",
-    name: "Salicylic Acid + LHA 2% Cleanser",
-    subtitle: "Acne, Blackheads & Oil control",
-    price: 284,
-    rating: 4,
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "Cleanse",
-    productType: "Cleanser",
-    concern: "Acne",
-    ingredient: "BHA / Salicylic Acid",
-    availability: true
-  },
-  {
-    id: "2",
-    name: "SPF 50 Sunscreen",
-    subtitle: "Sun protection + Antioxidants damage",
-    price: 729,
-    rating: 5,
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "SPF",
-    productType: "SPF",
-    concern: "Sun Protection",
-    ingredient: "UV Filters",
-    availability: true
-  },
-  {
-    id: "3",
-    name: "Vitamin B5 10% Moisturizer",
-    subtitle: "Enhanced barrier, long & well-hydrated",
-    price: 312,
-    rating: 4,
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "Moisturize",
-    productType: "Moisturizer",
-    concern: "Dry Skin",
-    ingredient: "Vitamin B5",
-    availability: true
-  },
-  {
-    id: "4",
-    name: "Hyaluronic Acid Serum",
-    subtitle: "Deep hydration & plumping effect",
-    price: 445,
-    rating: 5,
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "Treat",
-    productType: "Serum",
-    concern: "Dry Skin",
-    ingredient: "Hyaluronic Acid",
-    availability: true
-  },
-  {
-    id: "5",
-    name: "Niacinamide 10% + Zinc",
-    subtitle: "Pore control & oil regulation",
-    price: 356,
-    rating: 4,
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "Treat",
-    productType: "Serum",
-    concern: "Acne",
-    ingredient: "Niacinamide",
-    availability: false
-  },
-  {
-    id: "6",
-    name: "Retinol 0.5% Night Serum",
-    subtitle: "Anti-aging & skin renewal",
-    price: 567,
-    rating: 5,
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "Treat",
-    productType: "Serum",
-    concern: "Anti-aging",
-    ingredient: "Retinol",
-    availability: true
-  },
-  {
-    id: "7",
-    name: "Glycolic Acid Toner",
-    subtitle: "Exfoliation & brightening",
-    price: 298,
-    rating: 4,
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "Tone",
-    productType: "Toner",
-    concern: "Uneven / Bumpy Texture",
-    ingredient: "AHA",
-    availability: true
-  },
-  {
-    id: "8",
-    name: "Ceramide Repair Cream",
-    subtitle: "Barrier repair & overnight healing",
-    price: 423,
-    rating: 5,
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Body",
-    step: "Moisturize",
-    productType: "Body Lotion",
-    concern: "Dry Skin",
-    ingredient: "Ceramides",
-    availability: true
-  }
-];
+// Convert database product to UI product format
+const convertToUIProduct = (dbProduct: DatabaseProduct): Product => ({
+  id: dbProduct.id,
+  name: dbProduct.name,
+  subtitle: dbProduct.description,
+  price: dbProduct.price,
+  rating: 4, // Default rating since we don't have ratings in DB yet
+  imageFront: dbProduct.image_url,
+  imageBack: dbProduct.image_url,
+  hasSizes: false,
+  category: dbProduct.category,
+  step: "General", // Default step
+  productType: dbProduct.category,
+  concern: "General", // Default concern
+  ingredient: "Various", // Default ingredient
+  availability: dbProduct.stock_quantity > 0
+});
 
 function ShopPage() {
   // Add the page revealer animation with CustomEase "hop" effect
   usePageRevealer();
   
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load products from Supabase
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        
+        // Get category from URL params if present
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryFilter = urlParams.get('category');
+        
+        const filters = {
+          inStock: true,
+          ...(categoryFilter && { category: categoryFilter })
+        };
+        
+        const { data, error } = await productsService.getProducts(filters);
+        
+        if (error) {
+          setError(error);
+          return;
+        }
+
+        const uiProducts = data.map(convertToUIProduct);
+        setProducts(uiProducts);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load products');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, []);
 
   // Use the product filters hook
   const {
@@ -159,6 +84,37 @@ function ShopPage() {
 
   // Memoize the filter change handler to prevent unnecessary re-renders
   const memoizedHandleFilterChange = useCallback(handleFilterChange, [handleFilterChange]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-bg-primary">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mx-auto mb-4"></div>
+            <p className="text-body-large text-text-muted">Loading products...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-bg-primary">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <p className="text-body-large text-red-600 mb-4">Error loading products: {error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="btn btn-primary"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-bg-primary">

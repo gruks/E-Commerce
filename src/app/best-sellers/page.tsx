@@ -1,186 +1,66 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { Filter, Award } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { Filter } from "lucide-react";
 import { usePageRevealer } from "../../components/ui/PageTransition";
 import ProductCard from "../../components/ui/ProductCard";
 import ProductFilters from "../../components/ui/ProductFilters";
 import MobileFilterOverlay from "../../components/ui/MobileFilterOverlay";
 import { useProductFilters } from "../../hooks/useProductFilters";
 import { Product } from "../../types/product";
+import { productsService } from "../../services/productsService";
+import { Product as DatabaseProduct } from "../../types/database";
 
-// Enhanced mock product data with filter properties - All products
-const allProducts: Product[] = [
-  {
-    id: "1",
-    name: "Salicylic Acid + LHA 2% Cleanser",
-    subtitle: "Acne, Blackheads & Oil control",
-    price: 284,
-    rating: 4.2, // Best seller (>= 3.5)
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "Cleanse",
-    productType: "Cleanser",
-    concern: "Acne",
-    ingredient: "BHA / Salicylic Acid",
-    availability: true
-  },
-  {
-    id: "2",
-    name: "SPF 50 Sunscreen",
-    subtitle: "Sun protection + Antioxidants damage",
-    price: 729,
-    rating: 4.8, // Best seller (>= 3.5)
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "SPF",
-    productType: "SPF",
-    concern: "Sun Protection",
-    ingredient: "UV Filters",
-    availability: true
-  },
-  {
-    id: "3",
-    name: "Vitamin B5 10% Moisturizer",
-    subtitle: "Enhanced barrier, long & well-hydrated",
-    price: 312,
-    rating: 3.8, // Best seller (>= 3.5)
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "Moisturize",
-    productType: "Moisturizer",
-    concern: "Dry Skin",
-    ingredient: "Vitamin B5",
-    availability: true
-  },
-  {
-    id: "4",
-    name: "Hyaluronic Acid Serum",
-    subtitle: "Deep hydration & plumping effect",
-    price: 445,
-    rating: 4.9, // Best seller (>= 3.5)
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "Treat",
-    productType: "Serum",
-    concern: "Dry Skin",
-    ingredient: "Hyaluronic Acid",
-    availability: true
-  },
-  {
-    id: "5",
-    name: "Niacinamide 10% + Zinc",
-    subtitle: "Pore control & oil regulation",
-    price: 356,
-    rating: 3.2, // Not a best seller (< 3.5)
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "Treat",
-    productType: "Serum",
-    concern: "Acne",
-    ingredient: "Niacinamide",
-    availability: false
-  },
-  {
-    id: "6",
-    name: "Retinol 0.5% Night Serum",
-    subtitle: "Anti-aging & skin renewal",
-    price: 567,
-    rating: 4.7, // Best seller (>= 3.5)
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "Treat",
-    productType: "Serum",
-    concern: "Anti-aging",
-    ingredient: "Retinol",
-    availability: true
-  },
-  {
-    id: "7",
-    name: "Glycolic Acid Toner",
-    subtitle: "Exfoliation & brightening",
-    price: 298,
-    rating: 3.1, // Not a best seller (< 3.5)
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "Tone",
-    productType: "Toner",
-    concern: "Uneven / Bumpy Texture",
-    ingredient: "AHA",
-    availability: true
-  },
-  {
-    id: "8",
-    name: "Ceramide Repair Cream",
-    subtitle: "Barrier repair & overnight healing",
-    price: 423,
-    rating: 4.5, // Best seller (>= 3.5)
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Body",
-    step: "Moisturize",
-    productType: "Body Lotion",
-    concern: "Dry Skin",
-    ingredient: "Ceramides",
-    availability: true
-  },
-  {
-    id: "9",
-    name: "Vitamin C Brightening Serum",
-    subtitle: "Brightens skin tone & reduces dark spots",
-    price: 399,
-    rating: 3.6, // Best seller (>= 3.5)
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "Treat",
-    productType: "Serum",
-    concern: "Uneven / Bumpy Texture",
-    ingredient: "Vitamin C",
-    availability: true
-  },
-  {
-    id: "10",
-    name: "Basic Face Wash",
-    subtitle: "Simple daily cleanser",
-    price: 199,
-    rating: 2.8, // Not a best seller (< 3.5)
-    imageFront: "/placeholder.svg",
-    imageBack: "/placeholder.svg",
-    hasSizes: false,
-    category: "Skin",
-    step: "Cleanse",
-    productType: "Cleanser",
-    concern: "General",
-    ingredient: "Gentle Surfactants",
-    availability: true
-  }
-];
-
-// Filter products with rating >= 3.5 to get best sellers
-const bestSellerProducts: Product[] = allProducts.filter(product => product.rating >= 3.5);
+// Convert database product to UI product format
+const convertToUIProduct = (dbProduct: DatabaseProduct): Product => ({
+  id: dbProduct.id,
+  name: dbProduct.name,
+  subtitle: dbProduct.description,
+  price: dbProduct.price,
+  rating: 4.5, // Default high rating for best sellers
+  imageFront: dbProduct.image_url,
+  imageBack: dbProduct.image_url,
+  hasSizes: false,
+  category: dbProduct.category,
+  step: "General", // Default step
+  productType: dbProduct.category,
+  concern: "General", // Default concern
+  ingredient: "Various", // Default ingredient
+  availability: dbProduct.stock_quantity > 0
+});
 
 function BestSellersPage() {
   // Add the page revealer animation with CustomEase "hop" effect
   usePageRevealer();
   
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [bestSellerProducts, setBestSellerProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load best seller products from Supabase (featured products)
+  useEffect(() => {
+    const loadBestSellers = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await productsService.getFeaturedProducts(20);
+        
+        if (error) {
+          setError(error);
+          return;
+        }
+
+        const uiProducts = data.map(convertToUIProduct);
+        setBestSellerProducts(uiProducts);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load best sellers');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBestSellers();
+  }, []);
 
   // Use the product filters hook with best seller products
   const {
@@ -194,6 +74,37 @@ function BestSellersPage() {
 
   // Memoize the filter change handler to prevent unnecessary re-renders
   const memoizedHandleFilterChange = useCallback(handleFilterChange, [handleFilterChange]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-bg-primary">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mx-auto mb-4"></div>
+            <p className="text-body-large text-text-muted">Loading best sellers...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-bg-primary">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <p className="text-body-large text-red-600 mb-4">Error loading best sellers: {error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="btn btn-primary"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-bg-primary">
