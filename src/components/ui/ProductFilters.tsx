@@ -334,11 +334,11 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                         />
                         <div className={`w-4 h-4 border-2 rounded transition-colors ${
                           isSelected 
-                            ? 'bg-black border-black' 
+                            ? 'bg-white border-white' 
                             : 'border-transparent bg-transparent'
                         }`}>
                           {isSelected && (
-                            <svg className="w-3 h-3 text-white absolute top-0.5 left-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-3 h-3 text-black absolute top-0.5 left-0.5" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                             </svg>
                           )}
@@ -381,7 +381,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
           <Filter className="w-4 h-4" />
           Filters
           {getActiveFilterCount() > 0 && (
-            <span className="bg-brand-primary text-white text-xs px-2 py-0.5 rounded-full">
+            <span className="bg-brand-primary text-black text-xs px-2 py-0.5 rounded-full">
               {getActiveFilterCount()}
             </span>
           )}
@@ -448,7 +448,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
       {/* Mobile Overlay */}
       {isOpen && (
         <div 
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          className="lg:hidden fixed inset-0 bg-white bg-opacity-50 z-40"
           onClick={onToggle}
         />
       )}

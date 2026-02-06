@@ -9,21 +9,21 @@ module.exports = {
     extend: {
       colors: {
         // Background colors
-        'bg-primary': '#f1efe7',
-        'bg-secondary': '#f7f5ef',
-        'bg-tertiary': '#fbfaf7',
+        'bg-primary': '#8c3b1f',
+        'bg-secondary': '#8c3b1f',
+        'bg-tertiary': '#8c3b1f',
         
         // Text colors
-        'text-primary': '#000000',
-        'text-secondary': '#2a2a2a',
-        'text-muted': '#6f6f6f',
-        'text-subtle': '#9a9a9a',
+        'text-primary': '#fffff0',
+        'text-secondary': '#fffff0',
+        'text-muted': '#fffff0',
+        'text-subtle': '#fffff0',
         
         // Brand colors
-        'brand-primary': '#fc6902',
-        'brand-hover': '#e85f02',
-        'brand-soft': '#ffe2cf',
-        'brand-softer': '#fff1e6',
+        'brand-primary': '#0E2A47',
+        'brand-hover': '#0E2A47',
+        'brand-soft': '#0E2A47',
+        'brand-softer': '#0E2A47',
         
         // Surface colors
         'surface-primary': '#fbfaf7',
@@ -32,7 +32,7 @@ module.exports = {
         // Border colors
         'border-default': '#e2ded4',
         'border-hover': '#d6d1c6',
-        'border-focus': '#fc6902',
+        'border-focus': '#8c3b1f',
         
         // State colors
         'success': '#5f8f6a',

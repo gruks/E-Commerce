@@ -48,9 +48,9 @@ export const TrackingTimeline = memo(({ steps, className = '' }: TrackingTimelin
                   relative flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center
                   transition-all duration-300
                   ${step.isCompleted 
-                    ? 'bg-green-500 border-green-500 text-white' 
+                    ? 'bg-green-500 border-green-500 text-black' 
                     : step.isActive
-                      ? 'bg-[#fc6902] border-[#fc6902] text-white animate-pulse'
+                      ? 'bg-[#0E2A47] border-[#0E2A47] text-black animate-pulse'
                       : 'bg-white border-gray-300 text-gray-400'
                   }
                 `}

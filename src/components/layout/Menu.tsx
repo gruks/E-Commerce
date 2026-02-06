@@ -41,7 +41,7 @@ export default function Menu({ open, onClose }: MenuProps) {
         changeMenuColorOnOpen={false}
         colors={['#f8f9fa', '#ffffff']}
         logoUrl="/logo.png"
-        accentColor="#fc6902"
+        accentColor="#0E2A47"
         isFixed={true}
         closeOnClickAway={true}
         onMenuOpen={onClose}
@@ -55,7 +55,7 @@ export default function Menu({ open, onClose }: MenuProps) {
           {/* Left: Search */}
           <button
             onClick={() => setShowSearch(true)}
-            className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors px-3 py-2 rounded-md"
+            className="text-sm font-medium tracking-wide hover:text-[#0E2A47] transition-colors px-3 py-2 rounded-md"
             aria-label="Open search"
           >
             Search
@@ -64,9 +64,9 @@ export default function Menu({ open, onClose }: MenuProps) {
           {/* Center: Logo */}
           <Link 
             href="/" 
-            className="text-xl font-bold tracking-wider text-black hover:text-[#fc6902] transition-colors absolute left-1/2 transform -translate-x-1/2"
+            className="text-xl font-bold tracking-wider text-#fffff0 hover:text-[#0E2A47] transition-colors absolute left-1/2 transform -translate-x-1/2"
           >
-            necter<span className="text-[#fc6902]">.</span>
+            necter<span className="text-[#0E2A47]">.</span>
           </Link>
 
           {/* Right: Cart */}

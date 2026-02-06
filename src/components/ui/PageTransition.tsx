@@ -112,7 +112,7 @@ export function usePageRevealer() {
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: linear-gradient(135deg, #fc6902 0%, #e85f02 100%);
+        background: linear-gradient(135deg, #0E2A47 0%, #0E2A47 100%);
         z-index: 9999;
         pointer-events: none;
         transform-origin: center top;
@@ -120,12 +120,12 @@ export function usePageRevealer() {
         opacity: 1;
       `;
       document.body.appendChild(revealer);
-      console.log("✅ Revealer element created and visible");
+      console.log(" Revealer element created and visible");
     }
 
     // Initialize the hop ease and animate
     const easeToUse = initializeHopEase();
-    console.log(`🎯 Using ease: ${easeToUse} (CustomEase 'hop' equivalent)`);
+    console.log(`Using ease: ${easeToUse} (CustomEase 'hop' equivalent)`);
     
     // Animate with premium, slower timing for luxury feel
     gsap.to(revealer, {
@@ -134,10 +134,10 @@ export function usePageRevealer() {
       delay: 1.5,    // Increased from 1s to 1.5s for more anticipation
       ease: easeToUse,
       onStart: () => {
-        console.log("🚀 Premium revealer animation started with CustomEase 'hop' (slower timing)");
+        console.log("Premium revealer animation started with CustomEase 'hop' (slower timing)");
       },
       onComplete: () => {
-        console.log("✨ Premium revealer animation completed - luxurious page reveal!");
+        console.log("Premium revealer animation completed - luxurious page reveal!");
         if (revealer.parentNode) {
           revealer.parentNode.removeChild(revealer);
         }

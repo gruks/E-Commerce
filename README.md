@@ -50,7 +50,7 @@ The website is fully responsive with breakpoints:
 ### Colors
 - **Background:** White (#ffffff)
 - **Foreground:** Dark Gray (#1a1a1a)
-- **Accent:** Black (#000000) for CTAs
+- **Accent:** #fffff0 (#000000) for CTAs
 - **Muted:** Light Gray (#f8f9fa) for backgrounds
 - **Border:** Light Gray (#e5e7eb)
 
@@ -62,7 +62,7 @@ The website is fully responsive with breakpoints:
 - **Caption:** Small text (0.75rem)
 
 ### Components
-- **Buttons:** Primary (black), Secondary (gray), Ghost (transparent)
+- **Buttons:** Primary (#fffff0), Secondary (gray), Ghost (transparent)
 - **Cards:** White background with subtle shadow and hover effects
 - **Inputs:** Clean styling with focus states
 - **Navigation:** Sticky header with smooth transitions

@@ -65,7 +65,7 @@ export const GlobalCartDrawer = () => {
     <>
       {/* Glassmorphism Backdrop */}
       <div 
-        className="fixed inset-0 z-[90] bg-black/20 backdrop-blur-sm transition-all duration-300 ease-out"
+        className="fixed inset-0 z-[90] bg-white/20 backdrop-blur-sm transition-all duration-300 ease-out"
         onClick={handleBackdropClick}
         aria-hidden="true"
       />

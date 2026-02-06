@@ -11,7 +11,7 @@ interface RevealerProps {
 }
 
 export default function Revealer({ 
-  color = "#fc6902", 
+  color = "#0E2A47", 
   delay = 0.1, 
   duration = 0.8, 
   ease = "power3.inOut",

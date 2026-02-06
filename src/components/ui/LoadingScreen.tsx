@@ -43,7 +43,7 @@ export default function LoadingScreen({ onComplete, duration = 3000 }: LoadingSc
 
         {/* Loading Counter */}
         <div className="flex items-center justify-center space-x-2">
-          <div className="text-2xl font-bold text-black">
+          <div className="text-2xl font-bold text-#fffff0">
             {showCountUp && (
               <CountUp
                 from={0}

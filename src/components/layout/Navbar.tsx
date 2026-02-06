@@ -84,7 +84,7 @@ export default function Navbar() {
 
       {/* Auth Modal */}
       {showAuthModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/50">
           <div className="bg-white p-6 w-full max-w-md mx-4">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">
@@ -110,7 +110,7 @@ export default function Navbar() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#fc6902] focus:border-transparent"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0E2A47] focus:border-transparent"
                       placeholder="Enter your email"
                       required
                     />
@@ -127,7 +127,7 @@ export default function Navbar() {
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#fc6902] focus:border-transparent"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0E2A47] focus:border-transparent"
                       placeholder="Enter your password"
                       required
                       minLength={6}
@@ -148,7 +148,7 @@ export default function Navbar() {
                 <button
                   type="submit"
                   disabled={authLoading}
-                  className="w-full bg-[#fc6902] text-white py-2 hover:bg-[#e55a02] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full bg-[#0E2A47] text-black py-2 hover:bg-[#0E2A47] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {authLoading ? (
                     <div className="flex items-center justify-center gap-2">
@@ -165,7 +165,7 @@ export default function Navbar() {
             <div className="mt-4 text-center">
               <button
                 onClick={() => setAuthMode(authMode === 'signin' ? 'signup' : 'signin')}
-                className="text-sm text-[#fc6902] hover:text-[#e55a02]"
+                className="text-sm text-[#0E2A47] hover:text-[#0E2A47]"
               >
                 {authMode === 'signin' 
                   ? "Don't have an account? Sign up" 
@@ -178,19 +178,19 @@ export default function Navbar() {
       )}
 
       {/* NAVBAR */}
-      <header className="fixed top-0 w-full z-50 text-black bg-white/0 backdrop-blur-sm">
+      <header className="fixed top-0 w-full z-50 text-#fffff0 bg-white/0 backdrop-blur-sm">
         <div className="h-16 px-4 md:px-8 flex items-center justify-end w-full max-w-8xl mx-auto !pl-2">
           
           {/* Center: Logo */}
           <TransitionLink href="/" className="text-lg font-bold tracking-widest absolute left-1/2 transform -translate-x-1/2">
-            necter<span className="text-[#fc6902]">.</span>
+            necter<span className="text-[#0E2A47]">.</span>
           </TransitionLink>
 
           {/* Right: Search, User & Cart */}
           <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
             <button
               onClick={() => setShowSearch(true)}
-              className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors px-2 py-1 flex items-center"
+              className="text-sm font-medium tracking-wide hover:text-[#0E2A47] transition-colors px-2 py-1 flex items-center"
             >
               {/* Search text - hidden on small screens */}
               <span className="hidden sm:inline">Search</span>
@@ -205,7 +205,7 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors px-2 py-1 flex items-center gap-1"
+                  className="text-sm font-medium tracking-wide hover:text-[#0E2A47] transition-colors px-2 py-1 flex items-center gap-1"
                 >
                   <User className="w-4 h-4" />
                   <span className="hidden sm:inline">
@@ -244,7 +244,7 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors px-2 py-1 flex items-center gap-1"
+                  className="text-sm font-medium tracking-wide hover:text-[#0E2A47] transition-colors px-2 py-1 flex items-center gap-1"
                 >
                   <User className="w-4 h-4" />
                   <span className="hidden sm:inline">Account</span>
@@ -272,7 +272,7 @@ export default function Navbar() {
               </div>
             )}
             
-            <CartIcon className="text-sm font-medium tracking-wide hover:text-[#fc6902] transition-colors" />
+            <CartIcon className="text-sm font-medium tracking-wide hover:text-[#0E2A47] transition-colors" />
           </div>
         </div>
       </header>
@@ -290,7 +290,7 @@ export default function Navbar() {
           changeMenuColorOnOpen={false}
           colors={['#f8f9fa', '#ffffff']}
           logoUrl=""
-          accentColor="#fc6902"
+          accentColor="#8c3b1f"
           isFixed={true}
           closeOnClickAway={true}
           onMenuOpen={() => {}}

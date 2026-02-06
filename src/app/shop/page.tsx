@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Filter } from "lucide-react";
 import { usePageRevealer } from "../../components/ui/PageTransition";
 import ProductCard from "../../components/ui/ProductCard";
@@ -32,22 +33,29 @@ function ShopPage() {
   // Add the page revealer animation
   usePageRevealer();
   
+  const searchParams = useSearchParams();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // Get products from static constants (instant, no DB call)
+  // Get products from static constants based on filter parameter
   const products = useMemo(() => {
-    // Get category from URL params if present
-    const urlParams = new URLSearchParams(window.location.search);
-    const categoryFilter = urlParams.get('category');
+    // Get filter parameter from URL (e.g., /shop?filter=oral-care)
+    const filterParam = searchParams.get('filter');
     
     // Filter by category if specified, otherwise show all
-    const staticProducts = categoryFilter 
-      ? getProductsByCategory(categoryFilter)
+    const staticProducts = filterParam 
+      ? getProductsByCategory(filterParam)
       : PRODUCTS;
     
     // Convert to UI format
     return staticProducts.map(convertToUIProduct);
-  }, []);
+  }, [searchParams]);
+
+  // Log for debugging
+  useEffect(() => {
+    const filterParam = searchParams.get('filter');
+    console.log('Filter parameter:', filterParam);
+    console.log('Products count:', products.length);
+  }, [searchParams, products]);
 
   // Use the product filters hook
   const {
@@ -68,10 +76,17 @@ function ShopPage() {
       <div className="mb-16 mt-12">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center mb-8">
-            <h1 className="text-heading-1 text-gray-900 mb-4">Shop</h1>
+            <h1 className="text-heading-1 text-gray-900 mb-4">
+              {searchParams.get('filter') 
+                ? `Shop - ${searchParams.get('filter')?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}`
+                : 'Shop'
+              }
+            </h1>
             <p className="text-body-large text-gray-600 max-w-2xl mx-auto">
-              Discover our curated collection of eco-friendly products. Each product is designed 
-              for sustainability and conscious living.
+              {searchParams.get('filter')
+                ? `Browse our ${searchParams.get('filter')?.split('-').join(' ')} collection`
+                : 'Discover our curated collection of eco-friendly products. Each product is designed for sustainability and conscious living.'
+              }
             </p>
           </div>
 
@@ -84,7 +99,7 @@ function ShopPage() {
               <Filter className="w-4 h-4" />
               Filters
               {getActiveFilterCount() > 0 && (
-                <span className="bg-brand-primary text-white text-xs px-2 py-0.5 rounded-full">
+                <span className="bg-brand-primary text-black text-xs px-2 py-0.5 rounded-full">
                   {getActiveFilterCount()}
                 </span>
               )}
@@ -110,7 +125,7 @@ function ShopPage() {
           <div className="flex-1 min-h-full">
             {/* Results Count */}
             <div className="mb-6">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-[#fffff0]">
                 Showing {filteredProducts.length} of {products.length} products
                 {getActiveFilterCount() > 0 && (
                   <span className="ml-2 text-brand-primary">
@@ -122,7 +137,7 @@ function ShopPage() {
 
             {/* Product Grid */}
             {filteredProducts.length > 0 ? (
-              <div className="grid grid-3 min-h-[400px]">
+              <div className="grid grid-3 gap-6 min-h-[400px]">
                 {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

@@ -4,27 +4,57 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Hide scrollbar utility */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Slick-style Navigation Dots */
+.slick-active button {
+  background-color: #000;
+  width: 2rem;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 * {
   box-sizing: border-box;
 }
 
 :root {
   /* BACKGROUND */
-  --bg-primary: #f1efe7;        /* main app background */
-  --bg-secondary: #f7f5ef;      /* section background */
-  --bg-tertiary: #fbfaf7;       /* cards / inner blocks */
+  --bg-primary: #8c3b1f;        /* main app background */
+  --bg-secondary: #8c3b1f;      /* section background */
+  --bg-tertiary: #8c3b1f;       /* cards / inner blocks */
 
   /* TEXT */
-  --text-primary: #000000;      /* headings */
-  --text-secondary: #2a2a2a;    /* body text */
-  --text-muted: #6f6f6f;        /* labels, hints */
-  --text-subtle: #9a9a9a;       /* placeholders */
+  --text-primary: #fffff0;      /* headings */
+  --text-secondary: #fffff0;    /* body text */
+  --text-muted: #fffff0;        /* labels, hints */
+  --text-subtle: #fffff0;       /* placeholders */
 
   /* POP COLOR */
-  --brand-primary: #fc6902;     /* CTA, highlights */
-  --brand-hover: #e85f02;
-  --brand-soft: #ffe2cf;        /* pastel orange bg */
-  --brand-softer: #fff1e6;      /* ultra-soft accent */
+  --brand-primary: #0E2A47;     /* CTA, highlights */
+  --brand-hover: #0E2A47;
+  --brand-soft: #0E2A47;        /* pastel orange bg */
+  --brand-softer: #0E2A47;      /* ultra-soft accent */
 
   /* SURFACES */
   --surface-primary: #fbfaf7;
@@ -33,7 +63,7 @@
   /* BORDERS & DIVIDERS */
   --border-default: #e2ded4;
   --border-hover: #d6d1c6;
-  --border-focus: #fc6902;
+  --border-focus: #8c3b1f;
 
   /* STATES */
   --success: #5f8f6a;
@@ -67,8 +97,8 @@
   --overlay: rgba(0,0,0,0.35);
 
   /* Typography */
-  --font-heading: var(--font-league-spartan);
-  --font-body: var(--font-quicksand);
+  --font-heading: var(--font-harmond);
+  --font-body: var(--font-montserrat);
 
   /* Spacing */
   --radius: 0.625rem;
@@ -585,10 +615,10 @@ body {
   pointer-events: none;
   z-index: 9999;
   transform: scaleY(1);
-  background: #fc6902;
+  background: #8c3b1f;
   opacity: 1;
   /* Add subtle gradient for premium feel */
-  background: linear-gradient(135deg, #fc6902 0%, #e85f02 100%);
+  background: linear-gradient(135deg, #8c3b1f 0%, #8c3b1f 100%);
 }
 
 @theme inline {
@@ -704,10 +734,9 @@ body {
 
 .grid {
   --col-gap: var(--grid-gap);
-  --col-size: calc((100% - var(--col-gap) * (var(--visible-cols) - 1)) / var(--visible-cols));
   display: grid;
   align-items: start;
-  grid-gap: var(--col-gap);
+  gap: var(--col-gap);
   grid-template-columns: repeat(var(--visible-cols), 1fr);
 }
 
@@ -774,7 +803,7 @@ body {
   width: 100%;
   border: 2px solid var(--border-default);
   border-radius: 0;
-  background: white;
+  background: #0E2A47;
   color: var(--text-primary);
   font-family: var(--font-body);
   font-weight: 600;
@@ -1117,7 +1146,7 @@ body {
 
 /* Outer circle */
 .radio-circle {
-  @apply w-5 h-5 rounded-full border-2 border-black flex items-center justify-center transition;
+  @apply w-5 h-5 rounded-full border-2 border-white flex items-center justify-center transition;
 }
 
 /* Inner white tick */
@@ -1128,7 +1157,7 @@ body {
 
 /* Checked State */
 .radio-item input:checked + .radio-circle {
-  @apply bg-black;
+  @apply bg-white;
 }
 
 .radio-item input:checked + .radio-circle::after {
@@ -1138,4 +1167,12 @@ body {
 /* Label text spacing */
 .radio-text {
   @apply text-sm text-gray-800;
+}
+
+
+.feature {
+  --col-gap: var(--grid-gap);
+  display: grid;
+  align-items: start;
+  gap: var(--col-gap);
 }

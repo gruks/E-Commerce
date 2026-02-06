@@ -11,13 +11,16 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function CircularImage() {
   const sectionRef = useRef<HTMLElement>(null);
+  const counterRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   
-  // Use static categories - no DB fetch needed
+  // Use static categories
   const categories = CATEGORIES;
-  const [visibleRange, setVisibleRange] = useState([0, 6]);
+  const TOTAL = categories.length;
+  
+  const [visibleRange, setVisibleRange] = useState([0, 8]);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  // Initialize GSAP animations on mount
   useEffect(() => {
     let lenis: any = null;
     let resizeObserver: ResizeObserver | null = null;
@@ -32,7 +35,6 @@ export default function CircularImage() {
           smoothWheel: true,
         });
 
-        // Sync Lenis with GSAP ScrollTrigger
         lenis.on("scroll", ScrollTrigger.update);
         gsap.ticker.add((time) => {
           lenis.raf(time * 1000);
@@ -44,20 +46,14 @@ export default function CircularImage() {
 
         const cards = () => section.querySelectorAll(".card");
 
-        // Responsive radius calculation
         const getRadius = () =>
           window.innerWidth < 900
-            ? window.innerWidth * 0.7
-            : window.innerWidth * 0.35;
+            ? window.innerWidth * 0.75
+            : window.innerWidth * 0.38;
 
-        // Arc configuration for circular layout
-        const arcAngle = Math.PI * 0.4;
+        const arcAngle = Math.PI * 0.55;
         const startAngle = Math.PI / 2 - arcAngle / 2;
 
-        /**
-         * Position cards in circular arc based on scroll progress
-         * Uses GPU-accelerated transforms for optimal performance
-         */
         function position(progress = 0) {
           const radius = getRadius();
           const list = cards();
@@ -65,41 +61,66 @@ export default function CircularImage() {
 
           if (total === 0) return;
 
-          // Calculate scroll-based adjustment
-          const totalTravel = 1 + total / 7.5;
-          const adjust = (progress * totalTravel - 1) * 0.75;
+          const totalTravel = 1 + total / 6;
+          const adjust = (progress * totalTravel - 1) * 0.8;
+
+          let closestIndex = 0;
+          let closestDist = Infinity;
 
           list.forEach((card, i) => {
             const normalized = (total - i - 1) / total;
             const p = normalized + adjust;
 
-            // Calculate position on arc
             const angle = startAngle + arcAngle * p;
+
             const x = Math.cos(angle) * radius;
             const y = Math.sin(angle) * radius;
-            const rotation = (angle - Math.PI / 2) * (180 / Math.PI);
+            const rotation = (angle - Math.PI / 2);
 
-            // GPU-accelerated transform
+            // Distance from center for active detection
+            const dist = Math.abs(angle - Math.PI / 2);
+            if (dist < closestDist) {
+              closestDist = dist;
+              closestIndex = i;
+            }
+
+            // Depth effects for 3D feel
+            const depth = 1 - dist;
+            const scale = 0.75 + depth * 0.35;
+            const opacity = 0.25 + depth * 0.75;
+
             gsap.set(card, {
               x,
               y: -y + radius,
-              rotation: -rotation,
+              rotation: -rotation * (180 / Math.PI),
+              scale,
+              opacity,
+              z: depth * 200,
               transformOrigin: "center center",
-              force3D: true, // Force GPU acceleration
+              force3D: true,
               willChange: "transform",
             });
           });
 
-          // Update virtualization window for performance
-          // Only render cards near the viewport
-          const centerIndex = Math.floor(progress * categories.length);
+          setActiveIndex(closestIndex);
+
+          // Virtualization window
+          const centerIndex = Math.floor(progress * TOTAL);
           setVisibleRange([
-            Math.max(0, centerIndex - 5),
-            Math.min(categories.length, centerIndex + 5),
+            Math.max(0, centerIndex - 6),
+            Math.min(TOTAL, centerIndex + 6),
           ]);
+
+          // Step counter animation
+          if (counterRef.current) {
+            gsap.to(counterRef.current, {
+              yPercent: -100 * closestIndex,
+              duration: 0.5,
+              ease: "power3.out",
+            });
+          }
         }
 
-        // Create ScrollTrigger for pinning and scrubbing
         ScrollTrigger.create({
           trigger: section,
           start: "top top",
@@ -109,10 +130,8 @@ export default function CircularImage() {
           onUpdate: (self) => position(self.progress),
         });
 
-        // Initial position
         position(0);
 
-        // Handle window resize with debouncing via ResizeObserver
         resizeObserver = new ResizeObserver(() => {
           ScrollTrigger.refresh();
           const currentProgress = ScrollTrigger.getAll()[0]?.progress || 0;
@@ -127,31 +146,49 @@ export default function CircularImage() {
 
     init();
 
-    // Cleanup function to prevent memory leaks
     return () => {
       ScrollTrigger.killAll();
       resizeObserver?.disconnect();
       lenis?.destroy();
       gsap.ticker.remove((time) => lenis?.raf(time * 1000));
     };
-  }, [categories.length]);
+  }, [TOTAL]);
 
-  // Handle category card click navigation
-  const handleCategoryClick = (slug: string) => {
-    router.push(`/shop/${slug}`);
+  // Magnetic hover interaction
+  const onMove = (e: React.MouseEvent, el: HTMLElement) => {
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+
+    gsap.to(el, {
+      x: `+=${x * 0.12}`,
+      y: `+=${y * 0.12}`,
+      duration: 0.3,
+    });
   };
 
-  // Render virtualized cards for performance
-  // Only render cards within visible range
-  const visibleCards = [];
+  const onLeave = (el: HTMLElement) => {
+    gsap.to(el, { x: 0, y: 0, duration: 0.4 });
+  };
+
+  // Handle category click - redirect to /shop?filter=category
+  const handleCategoryClick = (slug: string) => {
+    router.push(`/shop?filter=${slug}`);
+  };
+
+  // Render cards
+  const cards = [];
   for (let i = visibleRange[0]; i < Math.min(visibleRange[1], categories.length); i++) {
     const category = categories[i];
-    
-    visibleCards.push(
+    const isActive = i === activeIndex;
+
+    cards.push(
       <div
         key={category.id}
-        className="card absolute w-[260px] h-[320px] shadow-lg overflow-hidden cursor-pointer transition-transform hover:scale-105"
+        className="card absolute w-[400px] h-[500px] overflow-hidden cursor-pointer group"
         style={{ willChange: "transform" }}
+        onMouseMove={(e) => onMove(e, e.currentTarget)}
+        onMouseLeave={(e) => onLeave(e.currentTarget)}
         onClick={() => handleCategoryClick(category.slug)}
         role="button"
         tabIndex={0}
@@ -163,23 +200,28 @@ export default function CircularImage() {
         }}
         aria-label={`View ${category.name} category`}
       >
-        {/* Category Image */}
-        <div className="relative w-full h-2/3 bg-gray-100">
+        {/* Rotated card with image */}
+        <div className="relative w-full h-full bg-white transform rotate-12 group-hover:rotate-6 transition-transform duration-500 shadow-2xl">
           <Image
             src={category.image}
             alt={category.name}
             fill
             className="object-cover"
-            sizes="260px"
-            priority={i < 6} // Prioritize first 6 images
+            sizes="400px"
+            priority={i < 3}
           />
-        </div>
-
-        {/* Category Name Overlay */}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-          <h3 className="text-white font-semibold text-lg text-center">
-            {category.name}
-          </h3>
+          
+          {/* Category info at bottom */}
+          <div className={`absolute bottom-0 left-0 right-0 bg-white p-6 transition-all ${
+            isActive ? "opacity-100" : "opacity-70"
+          }`}>
+            <h3 className="text-#fffff0 font-medium text-lg">
+              {category.name}
+            </h3>
+            <p className="text-gray-600 text-sm mt-1">
+              Explore our collection
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -188,10 +230,32 @@ export default function CircularImage() {
   return (
     <section
       ref={sectionRef}
-      className="steps relative h-screen w-full overflow-hidden bg-gray-50"
+      className="relative h-screen overflow-hidden bg-white"
     >
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        {visibleCards}
+      {/* Step Counter - Large text on left */}
+      <div className="absolute left-8 md:left-16 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
+        <div className="text-black font-bold overflow-hidden" style={{ 
+          fontSize: 'clamp(60px, 12vw, 140px)',
+          lineHeight: '1',
+          height: 'clamp(140px, 28vw, 320px)'
+        }}>
+          <div className="mb-2" style={{ lineHeight: '0.9' }}>STEP</div>
+          <div ref={counterRef} style={{ lineHeight: '0.9' }}>
+            {categories.map((_, i) => (
+              <div key={i}>
+                {(i + 1).toString().padStart(2, "0")}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Cards container with 3D perspective */}
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{ perspective: "1200px" }}
+      >
+        {cards}
       </div>
     </section>
   );

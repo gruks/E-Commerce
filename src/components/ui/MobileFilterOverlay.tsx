@@ -42,7 +42,7 @@ const MobileFilterOverlay: React.FC<MobileFilterOverlayProps> = ({
     <div className="lg:hidden fixed inset-0 z-50">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
+        className="absolute inset-0 bg-white bg-opacity-50 transition-opacity"
         onClick={onClose}
       />
       
@@ -53,7 +53,7 @@ const MobileFilterOverlay: React.FC<MobileFilterOverlayProps> = ({
           <div className="flex items-center gap-3">
             <h2 className="text-heading-3 text-text-primary">Filters</h2>
             {activeFilterCount > 0 && (
-              <span className="bg-brand-primary text-white text-xs px-2 py-1 rounded-full">
+              <span className="bg-brand-primary text-black text-xs px-2 py-1 rounded-full">
                 {activeFilterCount}
               </span>
             )}

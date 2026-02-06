@@ -61,7 +61,7 @@ function BestSellersPage() {
           <div className="text-center mb-4">
             <h1 className="text-heading-1 text-gray-900 ">Best Sellers</h1>
              <p className="text-xs font-semibold text-gray-500">
-                Top Selling Products of necter<span className="text-[#fc6902]">.</span>
+                Top Selling Products of necter<span className="text-[#0E2A47]">.</span>
               </p>
           </div>
 
@@ -74,7 +74,7 @@ function BestSellersPage() {
               <Filter className="w-4 h-4" />
               Filters
               {getActiveFilterCount() > 0 && (
-                <span className="bg-brand-primary text-white text-xs px-2 py-0.5 rounded-full">
+                <span className="bg-brand-primary text-black text-xs px-2 py-0.5 rounded-full">
                   {getActiveFilterCount()}
                 </span>
               )}
@@ -100,7 +100,7 @@ function BestSellersPage() {
           <div className="flex-1 min-h-full">
             {/* Results Count */}
             <div className="mb-6">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-[#fffff0]">
                 Showing {filteredProducts.length} of {bestSellerProducts.length} best-selling products
                 {getActiveFilterCount() > 0 && (
                   <span className="ml-2 text-brand-primary">
@@ -113,7 +113,7 @@ function BestSellersPage() {
 
             {/* Product Grid */}
             {filteredProducts.length > 0 ? (
-              <div className="grid grid-3 min-h-[400px]">
+              <div className="grid grid-3 gap-6 min-h-[400px]">
                 {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

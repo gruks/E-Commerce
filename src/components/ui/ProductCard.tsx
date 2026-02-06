@@ -109,16 +109,16 @@ export default function ProductCard({ product }: Props) {
 
         {/* CONTENT */}
         <div className="mt-4 space-y-2">
-          <h3 className="text-sm font-semibold text-neutral-900">
+          <h3 className="text-sm font-semibold text-#fffff0">
             {product.name}
           </h3>
 
-          <p className="text-xs text-neutral-500 mt-1">
+          <p className="text-xs text-white mt-1">
             {product.subtitle}
           </p>
 
           {/* RATING */}
-          <div className="flex gap-1 text-xs text-black mt-1">
+          <div className="flex gap-1 text-xs text-#fffff0 mt-1">
             {"★".repeat(Math.floor(product.rating))}
             {"☆".repeat(5 - Math.floor(product.rating))}
           </div>
@@ -138,8 +138,8 @@ export default function ProductCard({ product }: Props) {
             onClick={handleAddToCart}
             disabled={!product.availability || isAddingToCart}
             className="w-full mt-3 py-2
-                       bg-black text-white text-sm
-                       hover:bg-neutral-800 transition
+                       bg-white text-black text-sm
+                       hover:bg-white-800 transition
                        disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {isAddingToCart ? (

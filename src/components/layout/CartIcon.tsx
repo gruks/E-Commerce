@@ -32,7 +32,7 @@ export const CartIcon = ({
     <button
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      className={`relative p-2 hover:text-[#fc6902] transition-all duration-300`}
+      className={`relative p-2 hover:text-[#0E2A47] transition-all duration-300`}
       aria-label={isCartOpen ? 'Close cart' : `Open cart${itemCount > 0 ? ` (${itemCount} items)` : ''}`}
       type="button"
     >
@@ -59,7 +59,7 @@ export const CartIcon = ({
       {/* Badge */}
       {showBadge && itemCount > 0 && !isCartOpen && (
         <span 
-          className="absolute -top-1 -right-1 bg-[#fc6902] text-white text-xs font-medium rounded-full min-w-[1.25rem] h-5 flex items-center justify-center px-1 transition-all duration-300"
+          className="absolute -top-1 -right-1 bg-[#0E2A47] text-['#fffff0'] text-xs font-medium rounded-full min-w-[1.25rem] h-5 flex items-center justify-center px-1 transition-all duration-300"
           aria-hidden="true"
         >
           {itemCount > 99 ? '99+' : itemCount}

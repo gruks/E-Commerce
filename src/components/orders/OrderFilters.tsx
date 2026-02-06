@@ -90,7 +90,7 @@ export const OrderFilters = memo(({
           placeholder="Search by order number or product name..."
           value={searchQuery}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#fc6902] focus:border-transparent text-sm"
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0E2A47] focus:border-transparent text-sm"
         />
       </div>
 
@@ -132,7 +132,7 @@ export const OrderFilters = memo(({
                     onClick={() => handleStatusToggle(status)}
                     className={`
                       transition-all duration-200 transform hover:scale-105
-                      ${isSelected ? 'ring-2 ring-[#fc6902] ring-offset-1' : ''}
+                      ${isSelected ? 'ring-2 ring-[#0E2A47] ring-offset-1' : ''}
                     `}
                   >
                     <OrderStatusBadge 
@@ -155,14 +155,14 @@ export const OrderFilters = memo(({
                 type="date"
                 value={filters.dateRange?.start || ''}
                 onChange={(e) => handleDateRangeChange('start', e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc6902] focus:border-transparent text-sm"
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0E2A47] focus:border-transparent text-sm"
                 placeholder="Start date"
               />
               <input
                 type="date"
                 value={filters.dateRange?.end || ''}
                 onChange={(e) => handleDateRangeChange('end', e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc6902] focus:border-transparent text-sm"
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0E2A47] focus:border-transparent text-sm"
                 placeholder="End date"
               />
             </div>
@@ -180,7 +180,7 @@ export const OrderFilters = memo(({
                 step="0.01"
                 value={filters.priceRange?.min || ''}
                 onChange={(e) => handlePriceRangeChange('min', e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc6902] focus:border-transparent text-sm"
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0E2A47] focus:border-transparent text-sm"
                 placeholder="Min price"
               />
               <input
@@ -189,7 +189,7 @@ export const OrderFilters = memo(({
                 step="0.01"
                 value={filters.priceRange?.max || ''}
                 onChange={(e) => handlePriceRangeChange('max', e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fc6902] focus:border-transparent text-sm"
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0E2A47] focus:border-transparent text-sm"
                 placeholder="Max price"
               />
             </div>

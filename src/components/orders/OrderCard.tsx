@@ -47,7 +47,7 @@ export const OrderCard = memo(({ order, isSelected = false, onClick }: OrderCard
         bg-gray-50 border transition-all duration-200 cursor-pointer
         hover:shadow-md hover:border-gray-300
         ${isSelected 
-          ? 'border-[#fc6902] shadow-md ring-1 ring-[#fc6902]/20' 
+          ? 'border-[#0E2A47] shadow-md ring-1 ring-[#0E2A47]/20' 
           : 'border-gray-200'
         }
       `}

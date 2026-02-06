@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import LoadingScreen from './LoadingScreen';
+import { useLoadingState } from '@/src/contexts/LoadingContext';
 
 interface ClientWrapperProps {
   children: React.ReactNode;
@@ -16,32 +17,35 @@ export default function ClientWrapper({
 }: ClientWrapperProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const { setPageLoaded } = useLoadingState();
 
   useEffect(() => {
     setIsClient(true);
     
-    // Check if this is a page refresh/reload
-    const isPageRefresh = () => {
-      // Check if performance navigation API is available
-      if (typeof window !== 'undefined' && window.performance) {
-        const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-        return navigation.type === 'reload';
-      }
-      
-      // Fallback: check if page was accessed directly (not from navigation)
-      return document.referrer === '' || document.referrer === window.location.href;
-    };
-
-    // Show loading screen on page refresh or initial load
-    if (showLoading && (isPageRefresh() || !sessionStorage.getItem('hasVisited'))) {
+    // Always show loading on first visit to the site
+    const hasVisitedBefore = sessionStorage.getItem('hasVisited');
+    
+    if (showLoading && !hasVisitedBefore) {
+      console.log('First visit - Starting loading screen...');
       setIsLoading(true);
-      // Mark that user has visited (to avoid loading on navigation)
+      setPageLoaded(false); // Explicitly set to false
+      // Mark that user has visited
       sessionStorage.setItem('hasVisited', 'true');
+    } else {
+      // If not showing loading, mark as loaded immediately
+      console.log('Not first visit or loading disabled, setting page as loaded');
+      setPageLoaded(true);
     }
-  }, [showLoading]);
+  }, [showLoading, setPageLoaded]);
 
   const handleLoadingComplete = () => {
+    console.log('Loading complete, setting page as loaded');
     setIsLoading(false);
+    // Set page loaded state after loading completes
+    setTimeout(() => {
+      setPageLoaded(true);
+      console.log('Page loaded state set to true');
+    }, 400);
   };
 
   // Don't render anything on server side to avoid hydration issues

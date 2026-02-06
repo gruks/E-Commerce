@@ -46,7 +46,7 @@ export default function CategoriesPage() {
         id: cat.id,
         name: cat.name,
         image: cat.image,
-        href: `/shop/${cat.slug}`
+        href: `/shop?filter=${cat.slug}`
       })),
       {
         id: 'best-sellers',

@@ -45,7 +45,7 @@ export default function TrackOrdersPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-36 xl:px-64 py-6">
           {/* Page Title */}
           <div className="flex items-center gap-3">
-            <Package className="w-8 h-8 text-[#fc6902]" />
+            <Package className="w-8 h-8 text-[#0E2A47]" />
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Track Your Order</h1>
               <p className="text-gray-600 mt-1">
@@ -111,7 +111,7 @@ export default function TrackOrdersPage() {
             <div className="flex items-center justify-between">
               <button
                 onClick={handleNewSearch}
-                className="flex items-center gap-2 text-[#fc6902] hover:text-[#e55a02] transition-colors"
+                className="flex items-center gap-2 text-[#0E2A47] hover:text-[#e55a02] transition-colors"
               >
                 <ChevronRight className="w-4 h-4 rotate-180" />
                 <span>Track another order</span>

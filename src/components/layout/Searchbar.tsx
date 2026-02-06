@@ -42,14 +42,14 @@ export default function Searchbar({ open, onClose }: SearchbarProps) {
         <input
           type="text"
           placeholder="Search products..."
-          className="flex-1 border-b border-black outline-none text-sm py-1"
+          className="flex-1 border-b border-black outline-none text-sm text-black py-1"
           autoFocus={open}
         />
 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="text-xl font-light ml-auto hover:text-gray-600 transition-colors"
+          className="text-xl text-black font-light ml-auto hover:text-gray-600 transition-colors"
         >
           ✕
         </button>

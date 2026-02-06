@@ -288,7 +288,7 @@ export const NAVBAR_ITEMS = [
     hasSubcategories: true,
     subcategories: CATEGORIES.map(cat => ({
       label: cat.name,
-      href: `/shop/${cat.slug}`
+      href: `/shop?filter=${cat.slug}`
     }))
   },
   {

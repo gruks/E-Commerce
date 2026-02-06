@@ -164,7 +164,7 @@ export const OrderDetails = memo(({ order, className = '' }: OrderDetailsProps) 
           <button
             onClick={handleReorder}
             disabled={isReordering}
-            className="flex items-center gap-2 px-4 py-2 bg-[#fc6902] text-white hover:bg-[#e55a02] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 bg-[#0E2A47] text-black hover:bg-[#e55a02] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
           >
             <RotateCcw className="w-4 h-4" />
             {isReordering ? 'Adding to Cart...' : 'Reorder'}

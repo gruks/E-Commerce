@@ -103,7 +103,7 @@ export const CartDrawer = ({
                 Your Cart
               </h2>
               {itemCount > 0 && (
-                <span className="bg-[#fc6902] text-white text-xs font-medium px-2 py-1 rounded-full">
+                <span className="bg-[#0E2A47] text-[#fffff0] text-xs font-medium px-2 py-1 rounded-full">
                   {itemCount}
                 </span>
               )}
@@ -118,7 +118,7 @@ export const CartDrawer = ({
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-hidden flex flex-col">
+          <div className="flex-1 overflow-hidden flex flex-col text-[#0E2A47]">
             {isEmpty ? (
               /* Empty State */
               <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
@@ -129,7 +129,7 @@ export const CartDrawer = ({
                 <p className="text-gray-600 mb-6">Add some products to get started!</p>
                 <button
                   onClick={onClose}
-                  className="bg-[#fc6902] text-white px-6 py-2 rounded-lg hover:bg-[#e55a02] transition-colors"
+                  className="bg-[#0E2A47] text-[#fffff0] px-6 py-2 rounded-lg hover:bg-[#e55a02] transition-colors"
                 >
                   Continue Shopping
                 </button>
@@ -199,7 +199,7 @@ export const CartDrawer = ({
                             value={couponCode}
                             onChange={(e) => setCouponCode(e.target.value)}
                             placeholder="Enter promo code"
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#fc6902] focus:border-transparent"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0E2A47] focus:border-transparent"
                             onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
                             disabled={isApplyingCoupon}
                           />
@@ -213,7 +213,7 @@ export const CartDrawer = ({
                         </div>
                       )}
                       
-                      <button className="flex items-center gap-1 text-xs text-[#fc6902] hover:text-[#e55a02] mt-2 transition-colors">
+                      <button className="flex items-center gap-1 text-xs text-[#0E2A47] hover:text-[#e55a02] mt-2 transition-colors">
                         <span>View all offers</span>
                         <ExternalLink className="w-3 h-3" />
                       </button>
@@ -258,7 +258,7 @@ export const CartDrawer = ({
                   <button
                     onClick={onCheckout}
                     disabled={isLoading || isUpdating}
-                    className="w-full bg-[#fc6902] text-white py-3 rounded-lg font-medium hover:bg-[#e55a02] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="w-full bg-[#0E2A47] text-[#fffff0] py-3 rounded-lg font-medium hover:bg-[#e55a02] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     {isLoading || isUpdating ? 'Updating...' : 'Checkout'}
                   </button>
@@ -267,9 +267,9 @@ export const CartDrawer = ({
                   <div className="flex items-center justify-center gap-2 pt-2">
                     <span className="text-xs text-gray-500">Secure payment with</span>
                     <div className="flex gap-1">
-                      <div className="px-2 py-1 bg-blue-600 text-white text-xs rounded font-medium">Shop Pay</div>
-                      <div className="px-2 py-1 bg-yellow-400 text-black text-xs rounded font-medium">PayPal</div>
-                      <div className="px-2 py-1 bg-black text-white text-xs rounded font-medium">GPay</div>
+                      <div className="px-2 py-1 bg-blue-600 text-black text-xs rounded font-medium">Shop Pay</div>
+                      <div className="px-2 py-1 bg-yellow-400 text-#fffff0 text-xs rounded font-medium">PayPal</div>
+                      <div className="px-2 py-1 bg-white text-black text-xs rounded font-medium">GPay</div>
                     </div>
                   </div>
                 </div>

@@ -10,7 +10,7 @@ export function useRevealer(options = {}) {
         delay = 0.5,
         duration = 1.2,
         ease = "power3.inOut",
-        revealerColor = "#fc6902",
+        revealerColor = "#0E2A47",
         onComplete = null
     } = options;
 
