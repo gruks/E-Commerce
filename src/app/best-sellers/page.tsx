@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Filter } from "lucide-react";
 import { usePageRevealer } from "../../components/ui/PageTransition";
 import ProductCard from "../../components/ui/ProductCard";
@@ -8,58 +8,36 @@ import ProductFilters from "../../components/ui/ProductFilters";
 import MobileFilterOverlay from "../../components/ui/MobileFilterOverlay";
 import { useProductFilters } from "../../hooks/useProductFilters";
 import { Product } from "../../types/product";
-import { productsService } from "../../services/productsService";
-import { Product as DatabaseProduct } from "../../types/database";
+import { getBestSellers, StaticProduct } from "../../styles/constants";
 
-// Convert database product to UI product format
-const convertToUIProduct = (dbProduct: DatabaseProduct): Product => ({
-  id: dbProduct.id,
-  name: dbProduct.name,
-  subtitle: dbProduct.description,
-  price: dbProduct.price,
-  rating: 4.5, // Default high rating for best sellers
-  imageFront: dbProduct.image_url,
-  imageBack: dbProduct.image_url,
+// Convert static product to UI product format
+const convertToUIProduct = (staticProduct: StaticProduct): Product => ({
+  id: staticProduct.id,
+  name: staticProduct.name,
+  subtitle: staticProduct.description,
+  price: staticProduct.price,
+  rating: 4.5, // High rating for best sellers
+  imageFront: staticProduct.image,
+  imageBack: staticProduct.image,
   hasSizes: false,
-  category: dbProduct.category,
-  step: "General", // Default step
-  productType: dbProduct.category,
-  concern: "General", // Default concern
-  ingredient: "Various", // Default ingredient
-  availability: dbProduct.stock_quantity > 0
+  category: staticProduct.category,
+  step: "General",
+  productType: staticProduct.category,
+  concern: "General",
+  ingredient: "Various",
+  availability: staticProduct.inStock
 });
 
 function BestSellersPage() {
-  // Add the page revealer animation with CustomEase "hop" effect
+  // Add the page revealer animation
   usePageRevealer();
   
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [bestSellerProducts, setBestSellerProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  // Load best seller products from Supabase (featured products)
-  useEffect(() => {
-    const loadBestSellers = async () => {
-      try {
-        setLoading(true);
-        const { data, error } = await productsService.getFeaturedProducts(20);
-        
-        if (error) {
-          setError(error);
-          return;
-        }
-
-        const uiProducts = data.map(convertToUIProduct);
-        setBestSellerProducts(uiProducts);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load best sellers');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadBestSellers();
+  // Get best sellers from static constants (instant, no DB call)
+  const bestSellerProducts = useMemo(() => {
+    const staticProducts = getBestSellers();
+    return staticProducts.map(convertToUIProduct);
   }, []);
 
   // Use the product filters hook with best seller products
@@ -74,37 +52,6 @@ function BestSellersPage() {
 
   // Memoize the filter change handler to prevent unnecessary re-renders
   const memoizedHandleFilterChange = useCallback(handleFilterChange, [handleFilterChange]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-bg-primary">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mx-auto mb-4"></div>
-            <p className="text-body-large text-text-muted">Loading best sellers...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-bg-primary">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center py-12">
-            <p className="text-body-large text-red-600 mb-4">Error loading best sellers: {error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="btn btn-primary"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-bg-primary">

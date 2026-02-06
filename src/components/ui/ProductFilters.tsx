@@ -80,12 +80,14 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
 
   const handleSortChange = (value: string) => {
     setSortBy(value);
-    // Notify parent immediately with updated state
-    onFilterChange({
-      sortBy: value,
-      selectedFilters,
-      priceRange: currentPriceRange
-    });
+    // Defer parent notification to avoid setState during render
+    setTimeout(() => {
+      onFilterChange({
+        sortBy: value,
+        selectedFilters,
+        priceRange: currentPriceRange
+      });
+    }, 0);
   };
 
   const handleFilterToggle = (groupId: string, optionValue: string) => {
@@ -103,12 +105,14 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
             [groupId]: [...groupFilters, optionValue]
           };
 
-      // Notify parent immediately with updated state
-      onFilterChange({
-        sortBy,
-        selectedFilters: newSelectedFilters,
-        priceRange: currentPriceRange
-      });
+      // Defer parent notification to avoid setState during render
+      setTimeout(() => {
+        onFilterChange({
+          sortBy,
+          selectedFilters: newSelectedFilters,
+          priceRange: currentPriceRange
+        });
+      }, 0);
 
       return newSelectedFilters;
     });
@@ -121,12 +125,14 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
         [type === 'min' ? 'currentMin' : 'currentMax']: value
       };
 
-      // Notify parent immediately with updated state
-      onFilterChange({
-        sortBy,
-        selectedFilters,
-        priceRange: newPriceRange
-      });
+      // Defer parent notification to avoid setState during render
+      setTimeout(() => {
+        onFilterChange({
+          sortBy,
+          selectedFilters,
+          priceRange: newPriceRange
+        });
+      }, 0);
 
       return newPriceRange;
     });
@@ -165,8 +171,10 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
     });
     setSortBy(sortOptions[0]?.value || "featured");
 
-    // Notify parent immediately
-    onFilterChange(clearedState);
+    // Defer parent notification to avoid setState during render
+    setTimeout(() => {
+      onFilterChange(clearedState);
+    }, 0);
   };
 
   const getActiveFilterCount = () => {
@@ -385,7 +393,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
         ${className}
         ${isOpen ? 'block' : 'hidden lg:block'}
         bg-bg-tertiary p-6
-        lg:sticky lg:top-6 lg:h-fit mb-12
+        lg: lg:top-6 lg:h-fit mb-12
       `}>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

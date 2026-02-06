@@ -32,7 +32,7 @@ export default function Navbar() {
       setEmail('');
       setPassword('');
     } catch (error: any) {
-      setAuthError(error.message || 'Sign in failed');
+      setAuthError(error.message || 'Log In failed');
     } finally {
       setAuthLoading(false);
     }
@@ -88,7 +88,7 @@ export default function Navbar() {
           <div className="bg-white p-6 w-full max-w-md mx-4">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">
-                {authMode === 'signin' ? 'Sign In' : 'Create Account'}
+                {authMode === 'signin' ? 'Log In' : 'Create Account'}
               </h2>
               <button
                 onClick={() => setShowAuthModal(false)}
@@ -156,7 +156,7 @@ export default function Navbar() {
                       {authMode === 'signin' ? 'Signing In...' : 'Creating Account...'}
                     </div>
                   ) : (
-                    authMode === 'signin' ? 'Sign In' : 'Create Account'
+                    authMode === 'signin' ? 'Log In' : 'Create Account'
                   )}
                 </button>
               </div>
@@ -169,7 +169,7 @@ export default function Navbar() {
               >
                 {authMode === 'signin' 
                   ? "Don't have an account? Sign up" 
-                  : "Already have an account? Sign in"
+                  : "Already have an account? Log In"
                 }
               </button>
             </div>
@@ -250,7 +250,7 @@ export default function Navbar() {
                   <span className="hidden sm:inline">Account</span>
                 </button>
                 
-                {/* Sign In Dropdown */}
+                {/* Log In Dropdown */}
                 {showUserMenu && (
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white shadow-lg border border-gray-200 z-50">
                     <div className="py-2">
@@ -258,7 +258,7 @@ export default function Navbar() {
                         onClick={() => openAuthModal('signin')}
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                       >
-                        Sign In
+                        Log In
                       </button>
                       <button
                         onClick={() => openAuthModal('signup')}

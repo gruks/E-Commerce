@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Filter } from "lucide-react";
 import { usePageRevealer } from "../../components/ui/PageTransition";
 import ProductCard from "../../components/ui/ProductCard";
@@ -8,68 +8,45 @@ import ProductFilters from "../../components/ui/ProductFilters";
 import MobileFilterOverlay from "../../components/ui/MobileFilterOverlay";
 import { useProductFilters } from "../../hooks/useProductFilters";
 import { Product } from "../../types/product";
-import { productsService } from "../../services/productsService";
-import { Product as DatabaseProduct } from "../../types/database";
+import { PRODUCTS, getProductsByCategory, StaticProduct } from "../../styles/constants";
 
-// Convert database product to UI product format
-const convertToUIProduct = (dbProduct: DatabaseProduct): Product => ({
-  id: dbProduct.id,
-  name: dbProduct.name,
-  subtitle: dbProduct.description,
-  price: dbProduct.price,
-  rating: 4, // Default rating since we don't have ratings in DB yet
-  imageFront: dbProduct.image_url,
-  imageBack: dbProduct.image_url,
+// Convert static product to UI product format
+const convertToUIProduct = (staticProduct: StaticProduct): Product => ({
+  id: staticProduct.id,
+  name: staticProduct.name,
+  subtitle: staticProduct.description,
+  price: staticProduct.price,
+  rating: 4, // Default rating
+  imageFront: staticProduct.image,
+  imageBack: staticProduct.image,
   hasSizes: false,
-  category: dbProduct.category,
-  step: "General", // Default step
-  productType: dbProduct.category,
-  concern: "General", // Default concern
-  ingredient: "Various", // Default ingredient
-  availability: dbProduct.stock_quantity > 0
+  category: staticProduct.category,
+  step: "General",
+  productType: staticProduct.category,
+  concern: "General",
+  ingredient: "Various",
+  availability: staticProduct.inStock
 });
 
 function ShopPage() {
-  // Add the page revealer animation with CustomEase "hop" effect
+  // Add the page revealer animation
   usePageRevealer();
   
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  // Load products from Supabase
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        setLoading(true);
-        
-        // Get category from URL params if present
-        const urlParams = new URLSearchParams(window.location.search);
-        const categoryFilter = urlParams.get('category');
-        
-        const filters = {
-          inStock: true,
-          ...(categoryFilter && { category: categoryFilter })
-        };
-        
-        const { data, error } = await productsService.getProducts(filters);
-        
-        if (error) {
-          setError(error);
-          return;
-        }
-
-        const uiProducts = data.map(convertToUIProduct);
-        setProducts(uiProducts);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load products');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadProducts();
+  // Get products from static constants (instant, no DB call)
+  const products = useMemo(() => {
+    // Get category from URL params if present
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryFilter = urlParams.get('category');
+    
+    // Filter by category if specified, otherwise show all
+    const staticProducts = categoryFilter 
+      ? getProductsByCategory(categoryFilter)
+      : PRODUCTS;
+    
+    // Convert to UI format
+    return staticProducts.map(convertToUIProduct);
   }, []);
 
   // Use the product filters hook
@@ -85,37 +62,6 @@ function ShopPage() {
   // Memoize the filter change handler to prevent unnecessary re-renders
   const memoizedHandleFilterChange = useCallback(handleFilterChange, [handleFilterChange]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-bg-primary">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mx-auto mb-4"></div>
-            <p className="text-body-large text-text-muted">Loading products...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-bg-primary">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center py-12">
-            <p className="text-body-large text-red-600 mb-4">Error loading products: {error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="btn btn-primary"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-bg-primary">
       {/* Header */}
@@ -124,8 +70,8 @@ function ShopPage() {
           <div className="text-center mb-8">
             <h1 className="text-heading-1 text-gray-900 mb-4">Shop</h1>
             <p className="text-body-large text-gray-600 max-w-2xl mx-auto">
-              Discover our curated collection of premium skincare products. Each product is formulated with clean, 
-              science-backed ingredients for healthy, glowing skin.
+              Discover our curated collection of eco-friendly products. Each product is designed 
+              for sustainability and conscious living.
             </p>
           </div>
 

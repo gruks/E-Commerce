@@ -2,9 +2,15 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Product } from '@/src/types/database';
-import { productsService } from '@/src/services/productsService';
-import { localCartService, LocalCartItem, LocalCartItemWithProduct } from '@/src/services/localCartService';
+import { getProductById, StaticProduct } from '@/src/styles/constants';
+
+// Cart item with product details
+interface CartItemWithProduct {
+  productId: string;
+  quantity: number;
+  addedAt: string;
+  product: StaticProduct;
+}
 
 interface CartState {
   // UI State
@@ -13,8 +19,8 @@ interface CartState {
   isUpdating: boolean;
   isAnimating: boolean;
   
-  // Cart Data
-  items: LocalCartItemWithProduct[];
+  // Cart Data (stored in localStorage via Zustand persist)
+  items: CartItemWithProduct[];
   subtotal: number;
   itemCount: number;
   totalQuantity: number;
@@ -26,13 +32,12 @@ interface CartState {
   toggleCart: () => void;
   setAnimating: (animating: boolean) => void;
   
-  // Cart Management
-  loadCart: () => Promise<void>;
-  addItem: (productId: string, quantity?: number) => Promise<void>;
-  updateQuantity: (productId: string, quantity: number) => Promise<void>;
-  removeItem: (productId: string) => Promise<void>;
-  clearCart: () => Promise<void>;
-  syncCartWithServer: (userId: string) => Promise<void>;
+  // Cart Management (no DB calls - pure client-side)
+  loadCart: () => void;
+  addItem: (productId: string, quantity?: number) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
+  removeItem: (productId: string) => void;
+  clearCart: () => void;
   
   // Computed Values
   getItemCount: () => number;
@@ -62,6 +67,7 @@ export const useCartStore = create<CartState>()(
           document.body.style.overflow = 'hidden';
         }
       },
+      
       closeCart: () => {
         set({ isAnimating: true });
         // Delay state change to allow animation
@@ -73,6 +79,7 @@ export const useCartStore = create<CartState>()(
           }
         }, 300);
       },
+      
       toggleCart: () => {
         const { isCartOpen } = get();
         if (isCartOpen) {
@@ -81,75 +88,79 @@ export const useCartStore = create<CartState>()(
           get().openCart();
         }
       },
+      
       setAnimating: (animating: boolean) => set({ isAnimating: animating }),
 
-      // Cart Management
-      loadCart: async () => {
-        set({ isLoading: true, error: null });
+      // Cart Management - Pure client-side, no DB calls
+      loadCart: () => {
+        // Cart is automatically loaded from localStorage via persist middleware
+        // This function recalculates totals
+        const { items } = get();
         
-        try {
-          const cartItems = localCartService.getCartItems();
-          const itemsWithProducts: LocalCartItemWithProduct[] = [];
-          
-          // Fetch product details for each cart item
-          for (const item of cartItems) {
-            const { data: product, error } = await productsService.getProductById(item.productId);
-            
-            if (product && !error) {
-              itemsWithProducts.push({
-                ...item,
-                product
-              });
-            } else {
-              // Remove invalid items from cart
-              localCartService.removeFromCart(item.productId);
-            }
-          }
-          
-          const subtotal = itemsWithProducts.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
-          const itemCount = itemsWithProducts.length;
-          const totalQuantity = itemsWithProducts.reduce((sum, item) => sum + item.quantity, 0);
+        const subtotal = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+        const itemCount = items.length;
+        const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
 
-          set({
-            items: itemsWithProducts,
-            subtotal,
-            itemCount,
-            totalQuantity,
-            isLoading: false,
-            error: null
-          });
-        } catch (error) {
-          console.error('Error loading cart:', error);
-          set({ 
-            error: error instanceof Error ? error.message : 'Failed to load cart',
-            isLoading: false 
-          });
-        }
+        set({
+          subtotal,
+          itemCount,
+          totalQuantity,
+          error: null
+        });
       },
 
-      addItem: async (productId: string, quantity = 1) => {
+      addItem: (productId: string, quantity = 1) => {
         set({ isUpdating: true, error: null });
         
         try {
-          // Check if product exists and has stock
-          const { data: product, error } = await productsService.getProductById(productId);
+          // Get product from static data
+          const product = getProductById(productId);
           
-          if (error || !product) {
+          if (!product) {
             set({ error: 'Product not found', isUpdating: false });
             return;
           }
 
-          if (product.stock_quantity < quantity) {
-            set({ error: `Only ${product.stock_quantity} items available in stock`, isUpdating: false });
+          if (!product.inStock) {
+            set({ error: 'Product is out of stock', isUpdating: false });
             return;
           }
 
-          // Add to localStorage
-          localCartService.addToCart(productId, quantity);
-          
-          // Reload cart to get updated data
-          await get().loadCart();
-          set({ isUpdating: false });
+          const { items } = get();
+          const existingItemIndex = items.findIndex(item => item.productId === productId);
+
+          let updatedItems: CartItemWithProduct[];
+
+          if (existingItemIndex >= 0) {
+            // Update existing item quantity
+            updatedItems = [...items];
+            updatedItems[existingItemIndex].quantity += quantity;
+          } else {
+            // Add new item
+            updatedItems = [
+              ...items,
+              {
+                productId,
+                quantity,
+                addedAt: new Date().toISOString(),
+                product
+              }
+            ];
+          }
+
+          // Calculate new totals
+          const subtotal = updatedItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+          const itemCount = updatedItems.length;
+          const totalQuantity = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
+
+          set({
+            items: updatedItems,
+            subtotal,
+            itemCount,
+            totalQuantity,
+            isUpdating: false,
+            error: null
+          });
         } catch (error) {
           console.error('Error adding item to cart:', error);
           set({ 
@@ -159,34 +170,35 @@ export const useCartStore = create<CartState>()(
         }
       },
 
-      updateQuantity: async (productId: string, quantity: number) => {
+      updateQuantity: (productId: string, quantity: number) => {
         set({ isUpdating: true, error: null });
         
         try {
           if (quantity <= 0) {
-            await get().removeItem(productId);
+            get().removeItem(productId);
             return;
           }
 
-          // Check stock availability
-          const { data: product, error } = await productsService.getProductById(productId);
-          
-          if (error || !product) {
-            set({ error: 'Product not found', isUpdating: false });
-            return;
-          }
+          const { items } = get();
+          const updatedItems = items.map(item => 
+            item.productId === productId 
+              ? { ...item, quantity }
+              : item
+          );
 
-          if (product.stock_quantity < quantity) {
-            set({ error: `Only ${product.stock_quantity} items available in stock`, isUpdating: false });
-            return;
-          }
+          // Calculate new totals
+          const subtotal = updatedItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+          const itemCount = updatedItems.length;
+          const totalQuantity = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
 
-          // Update in localStorage
-          localCartService.updateQuantity(productId, quantity);
-          
-          // Reload cart to get updated data
-          await get().loadCart();
-          set({ isUpdating: false });
+          set({
+            items: updatedItems,
+            subtotal,
+            itemCount,
+            totalQuantity,
+            isUpdating: false,
+            error: null
+          });
         } catch (error) {
           console.error('Error updating cart item:', error);
           set({ 
@@ -196,16 +208,26 @@ export const useCartStore = create<CartState>()(
         }
       },
 
-      removeItem: async (productId: string) => {
+      removeItem: (productId: string) => {
         set({ isUpdating: true, error: null });
         
         try {
-          // Remove from localStorage
-          localCartService.removeFromCart(productId);
-          
-          // Reload cart to get updated data
-          await get().loadCart();
-          set({ isUpdating: false });
+          const { items } = get();
+          const updatedItems = items.filter(item => item.productId !== productId);
+
+          // Calculate new totals
+          const subtotal = updatedItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+          const itemCount = updatedItems.length;
+          const totalQuantity = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
+
+          set({
+            items: updatedItems,
+            subtotal,
+            itemCount,
+            totalQuantity,
+            isUpdating: false,
+            error: null
+          });
         } catch (error) {
           console.error('Error removing cart item:', error);
           set({ 
@@ -215,45 +237,15 @@ export const useCartStore = create<CartState>()(
         }
       },
 
-      clearCart: async () => {
-        set({ isUpdating: true, error: null });
-        
-        try {
-          localCartService.clearCart();
-          
-          set({
-            items: [],
-            subtotal: 0,
-            itemCount: 0,
-            totalQuantity: 0,
-            isUpdating: false,
-            error: null
-          });
-        } catch (error) {
-          console.error('Error clearing cart:', error);
-          set({ 
-            error: error instanceof Error ? error.message : 'Failed to clear cart',
-            isUpdating: false 
-          });
-        }
-      },
-
-      // Sync cart with server when user logs in (future enhancement)
-      syncCartWithServer: async (userId: string) => {
-        // This function can be called when user logs in
-        // to sync localStorage cart with server cart
-        try {
-          const localItems = localCartService.getCartItems();
-          
-          // TODO: Implement server sync logic here
-          // For now, we'll just keep using localStorage
-          console.log('Cart sync with server for user:', userId, 'Items:', localItems);
-          
-          // Reload cart to ensure consistency
-          await get().loadCart();
-        } catch (error) {
-          console.error('Error syncing cart with server:', error);
-        }
+      clearCart: () => {
+        set({
+          items: [],
+          subtotal: 0,
+          itemCount: 0,
+          totalQuantity: 0,
+          isUpdating: false,
+          error: null
+        });
       },
 
       // Computed Values
@@ -273,10 +265,13 @@ export const useCartStore = create<CartState>()(
       }
     }),
     {
-      name: 'cart-storage',
+      name: 'necter-cart-storage', // localStorage key
+      // Persist cart items and totals
       partialize: (state) => ({
-        // Only persist UI state, cart data comes from localStorage
-        isCartOpen: state.isCartOpen
+        items: state.items,
+        subtotal: state.subtotal,
+        itemCount: state.itemCount,
+        totalQuantity: state.totalQuantity
       })
     }
   )

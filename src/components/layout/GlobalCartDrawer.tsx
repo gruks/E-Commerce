@@ -6,10 +6,9 @@ import { useAuth } from "@/src/contexts/AuthContext";
 import { CartDrawer } from "@/src/components/cart";
 
 export const GlobalCartDrawer = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const {
     isCartOpen,
-    isLoading,
     isUpdating,
     items,
     subtotal,
@@ -17,21 +16,13 @@ export const GlobalCartDrawer = () => {
     closeCart,
     updateQuantity,
     removeItem,
-    loadCart,
-    syncCartWithServer
+    loadCart
   } = useCartStore();
 
-  // Load cart on component mount
+  // Load cart on component mount (recalculate totals)
   useEffect(() => {
     loadCart();
   }, [loadCart]);
-
-  // Sync cart with server when user logs in
-  useEffect(() => {
-    if (user && !authLoading) {
-      syncCartWithServer(user.id);
-    }
-  }, [user, authLoading, syncCartWithServer]);
 
   // Handle ESC key to close cart
   useEffect(() => {
@@ -47,12 +38,12 @@ export const GlobalCartDrawer = () => {
     }
   }, [isCartOpen, closeCart]);
 
-  const handleUpdateQuantity = async (productId: string, quantity: number) => {
-    await updateQuantity(productId, quantity);
+  const handleUpdateQuantity = (productId: string, quantity: number) => {
+    updateQuantity(productId, quantity);
   };
 
-  const handleRemoveItem = async (productId: string) => {
-    await removeItem(productId);
+  const handleRemoveItem = (productId: string) => {
+    removeItem(productId);
   };
 
   const handleCheckout = () => {
@@ -101,8 +92,8 @@ export const GlobalCartDrawer = () => {
                 subtitle: item.product.description,
                 price: item.product.price,
                 quantity: item.quantity,
-                image: item.product.image_url,
-                inStock: item.product.stock_quantity > 0
+                image: item.product.image,
+                inStock: item.product.inStock
               }))}
               suggestedProducts={[]} // TODO: Implement suggested products
               promotionProgress={undefined} // TODO: Implement promotion progress
@@ -120,7 +111,7 @@ export const GlobalCartDrawer = () => {
               onApplyCoupon={async () => {}} // TODO: Implement
               onCheckout={handleCheckout}
               appliedCoupon=""
-              isLoading={isLoading}
+              isLoading={false}
               isUpdating={isUpdating}
             />
             
@@ -131,12 +122,6 @@ export const GlobalCartDrawer = () => {
               </div>
             )}
 
-            {/* Authentication Status */}
-            {user && (
-              <div className="absolute top-4 left-4 right-4 bg-green-50 border border-green-200 text-green-700 px-3 py-2 text-xs">
-                ✅ Signed in as {user.email?.split('@')[0]}
-              </div>
-            )}
           </div>
         </div>
       </div>

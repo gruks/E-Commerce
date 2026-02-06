@@ -7,6 +7,7 @@ import StarBorder from "../components/ui/StarBorder";
 import { AnimatedWords, AnimatedLines } from "../components/ui/AnimatedText";
 import { usePageRevealer } from "../components/ui/PageTransition";
 import ClientWrapper from "../components/ui/ClientWrapper";
+import CircularImage from "../components/ui/CircularImage";
 
 // Hero Section Component
 const HeroSection = () => {
@@ -61,86 +62,10 @@ const HeroSection = () => {
 
 // Category Cards Component
 const CategoryCards = () => {
-  const categories = [
-    {
-      id: 1,
-      name: "Skincare",
-      description: "Face serums, moisturizers & cleansers",
-      image: "/placeholder.svg",
-      href: "/categories/skincare",
-      products: "24 products"
-    },
-    {
-      id: 2,
-      name: "Body Care",
-      description: "Body lotions, scrubs & treatments",
-      image: "/placeholder.svg",
-      href: "/categories/body-care",
-      products: "18 products"
-    },
-    {
-      id: 3,
-      name: "Hair Care",
-      description: "Shampoos, conditioners & treatments",
-      image: "/placeholder.svg",
-      href: "/categories/hair-care",
-      products: "12 products"
-    },
-    {
-      id: 4,
-      name: "Sun Care",
-      description: "Sunscreens & after-sun care",
-      image: "/placeholder.svg",
-      href: "/categories/sun-care",
-      products: "8 products"
-    }
-  ];
-
-  return (
-    <section className="section bg-bg-primary">
-      <div className="container">
-        <div className="text-center mb-12">
-          <h2 className="text-heading-1 text-text-primary mb-4 font-spartan font-bold">
-            <AnimatedWords delay={3.6}>Shop by Category</AnimatedWords>
-          </h2>
-          <p className="text-body-large text-text-secondary max-w-2xl mx-auto font-quicksand font-light">
-            <AnimatedLines delay={4.0}>Explore our carefully curated categories of clean, effective products for your daily routine.</AnimatedLines>
-          </p>
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((category) => (
-            <Link key={category.id} href={category.href} className="group">
-              <div className="card p-0 overflow-hidden bg-bg-tertiary">
-                <div className="aspect-square bg-bg-secondary overflow-hidden">
-                  <Image
-                    src={category.image}
-                    alt={category.name}
-                    width={300}
-                    height={300}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="p-6">
-                  <h3 className="text-heading-3 text-text-primary mb-2 font-spartan font-semibold">
-                    <AnimatedWords delay={4.4}>{category.name}</AnimatedWords>
-                  </h3>
-                  <p className="text-body-small text-text-muted mb-3 font-quicksand font-light">
-                    <AnimatedLines delay={4.6}>{category.description}</AnimatedLines>
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-caption text-text-subtle font-quicksand">{category.products}</span>
-                    <ArrowRight className="w-4 h-4 text-text-muted group-hover:text-brand-primary group-hover:translate-x-1 transition-all" />
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </section>
+  return(
+    <CircularImage />
   );
-};
+}
 
 // Features Section
 const FeaturesSection = () => {
