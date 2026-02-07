@@ -12,9 +12,7 @@ A modern eco-friendly e-commerce platform for sustainable personal care products
 
 ---
 
-## Live Demo
-[View Demo](#)  
-`https://e-commerce-ecru-delta.vercel.app/`
+[View Site](https://e-commerce-ecru-delta.vercel.app/)  
 ---
 
 ## Overview
@@ -134,7 +132,7 @@ necter/
 1. Create a Supabase project at [supabase.com](https://supabase.com)
 2. Run the following SQL to set up tables:
           
-          `supabase-schema.sql`
+          supabase-schema.sql
 
 3. Add your Supabase URL and anon key to `.env.local`
 
