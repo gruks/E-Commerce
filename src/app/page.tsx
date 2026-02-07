@@ -71,7 +71,7 @@ const ProductGridSection = () => {
   const router = useRouter();
   const products = getBestSellers().slice(0, 12);
 
-  const scrollContainerRef = useRef(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const [itemsPerSlide, setItemsPerSlide] = useState(4);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -96,7 +96,7 @@ const ProductGridSection = () => {
   const totalSlides = Math.ceil(products.length / itemsPerSlide);
 
   // ---------- SCROLL TO SLIDE ----------
-  const scrollToSlide = (index) => {
+  const scrollToSlide = (index: number) => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
@@ -125,7 +125,7 @@ const ProductGridSection = () => {
   }
 
   // ---------- TRANSFORM TO PRODUCTCARD FORMAT ----------
-  const transformProduct = (product) => ({
+  const transformProduct = (product: any) => ({
     id: product.id,
     name: product.name,
     subtitle: product.description,
@@ -140,7 +140,7 @@ const ProductGridSection = () => {
   return (
     <section className="bg-bg-tertiary py-16">
       <div className="container mx-auto px-4 max-w-[1280px]">
-        <h1 className="text-3xl font-bold text-#fffff0 mb-8">
+        <h1 className="text-3xl font-bold text-black mb-8">
           <AnimatedLetters>Our Best Sellers</AnimatedLetters>
         </h1>
 
@@ -210,7 +210,7 @@ const ProductGridSection = () => {
 const ShopByCategorySection = () => {
   const router = useRouter();
 
-  const scrollContainerRef = useRef(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const [itemsPerSlide, setItemsPerSlide] = useState(4);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -240,7 +240,7 @@ const ShopByCategorySection = () => {
   }
 
   // ---------- SCROLL ----------
-  const scrollToSlide = (index) => {
+  const scrollToSlide = (index: number) => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
@@ -264,7 +264,7 @@ const ShopByCategorySection = () => {
     <section className="bg-bg-tertiary py-16">
       <div className="container mx-auto px-4 max-w-[1280px]">
 
-        <h2 className="text-3xl font-bold text-#fffff0 mb-8">
+        <h2 className="text-3xl font-bold text-black mb-8">
           Shop by Category
         </h2>
 
@@ -310,7 +310,7 @@ const ShopByCategorySection = () => {
                     </div>
 
                     <div className="py-3 flex items-center justify-center">
-                      <h3 className="text-#fffff0 font-medium text-center px-4">
+                      <h3 className="text-black font-medium text-center px-4">
                         {category.name}
                       </h3>
                     </div>
@@ -375,11 +375,11 @@ const FutureOfPersonalCareSection = () => {
       <div className="container mx-auto px-4 max-w-[1280px]">
 
         {/* Heading */}
-        <h2 className="text-3xl md:text-4xl font-bold text-#fffff0 text-center mb-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-black text-center mb-4">
           The future of personal care is here
         </h2>
 
-        <p className="text-#fffff0 text-center mb-14 max-w-3xl mx-auto text-sm md:text-base">
+        <p className="text-black text-center mb-14 max-w-3xl mx-auto text-sm md:text-base">
           Embrace Minimalist, where each element is chosen for its scientific merit,
           offering you authentic, effective skincare solutions.
         </p>
@@ -412,14 +412,14 @@ const FutureOfPersonalCareSection = () => {
                   rounded-full
                   bg-white/5
                 ">
-                  <Icon className="w-8 h-8 text-#fffff0" />
+                  <Icon className="w-8 h-8 text-black" />
                 </div>
 
-                <h3 className="text-#fffff0 font-semibold text-lg mb-2">
+                <h3 className="text-black font-semibold text-lg mb-2">
                   {feature.title}
                 </h3>
 
-                <p className="text-#fffff0 text-sm leading-relaxed max-w-[220px]">
+                <p className="text-black text-sm leading-relaxed max-w-[220px]">
                   {feature.text}
                 </p>
               </div>
@@ -535,7 +535,7 @@ const CustomerReviewsSection = () => {
     <section className="bg-bg-tertiary py-6 overflow-hidden">
       <div className="max-w-[1280px] mx-auto px-4">
 
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-#fffff0 mb-6 tracking-tight">
+        <h2 className="text-3xl md:text-4xl font-bold text-center text-black mb-6 tracking-tight">
           What Our Customers Say
         </h2>
 
@@ -578,15 +578,15 @@ const CustomerReviewsSection = () => {
 
                   {/* Avatar + Name */}
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-semibold text-#fffff0">
+                    <div className="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center font-semibold text-black">
                       {review.name[0]}
                     </div>
 
                     <div>
-                      <div className="font-semibold text-#fffff0">
+                      <div className="font-semibold text-black">
                         {review.name}
                       </div>
-                      <div className="text-xs text-#fffff0/60">
+                      <div className="text-xs text-black/60">
                         {review.date}
                       </div>
                     </div>
@@ -597,13 +597,13 @@ const CustomerReviewsSection = () => {
                     {[...Array(review.rating)].map((_, x) => (
                       <Star
                         key={x}
-                        className="w-4 h-4 fill-#fffff0 text-#fffff0 opacity-90"
+                        className="w-4 h-4 fill-black text-black opacity-90"
                       />
                     ))}
                   </div>
 
                   {/* Quote Text */}
-                  <p className="text-#fffff0 text-lg leading-relaxed font-light">
+                  <p className="text-black text-lg leading-relaxed font-light">
                     “{review.text}”
                   </p>
 
