@@ -1,13 +1,13 @@
 "use client";
 
-import { Order } from '@/src/types/database';
+import { OrderStatus } from '@/src/types/order';
 
 interface OrderStatusBadgeProps {
-  status: Order['status'];
+  status: OrderStatus;
   className?: string;
 }
 
-const statusConfig = {
+const statusConfig: Record<OrderStatus, { label: string; className: string }> = {
   pending: {
     label: 'Pending',
     className: 'bg-gray-100 text-gray-800 border-gray-200'
@@ -19,6 +19,10 @@ const statusConfig = {
   shipped: {
     label: 'Shipped',
     className: 'bg-blue-100 text-blue-800 border-blue-200'
+  },
+  'out-for-delivery': {
+    label: 'Out for Delivery',
+    className: 'bg-purple-100 text-purple-800 border-purple-200'
   },
   delivered: {
     label: 'Delivered',
