@@ -1,8 +1,6 @@
 type MenuItem = {
   label: string;
   href?: string;
-  hasSubcategories?: boolean;
-  subcategories?: MenuItem[];
 };
 
 type StaggeredMenuItem = {
@@ -275,26 +273,18 @@ export const NAVBAR_ITEMS = [
   {
     label: "Best Seller",
     href: "/best-sellers",
-    hasSubcategories: false
   },
   {
     label: "Track Order",
     href: "/track-order",
-    hasSubcategories: false,
   },
   {
     label: "Categories",
     href: "/categories",
-    hasSubcategories: true,
-    subcategories: CATEGORIES.map(cat => ({
-      label: cat.name,
-      href: `/shop?filter=${cat.slug}`
-    }))
   },
   {
     label: "Products",
     href: "/shop",
-    hasSubcategories: false
   }
 ] as const;
 
