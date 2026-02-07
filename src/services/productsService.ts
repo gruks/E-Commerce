@@ -1,5 +1,5 @@
 import { supabase } from '@/src/lib/supabase';
-import { Product } from '@/src/types/database';
+import { Product, Database } from '@/src/types/database';
 
 export interface ProductFilters {
   category?: string;
@@ -122,10 +122,13 @@ class ProductsService {
 
   async getCategories(): Promise<{ data: string[]; error: string | null }> {
     try {
+      type CategoryResult = { category: string };
+      
       const { data, error } = await supabase
         .from('products')
         .select('category')
-        .gt('stock_quantity', 0);
+        .gt('stock_quantity', 0)
+        .returns<CategoryResult[]>();
 
       if (error) {
         console.error('Error fetching categories:', error);
@@ -146,11 +149,13 @@ class ProductsService {
 
   async checkStock(productId: string, quantity: number): Promise<{ available: boolean; currentStock: number; error: string | null }> {
     try {
+      type StockResult = { stock_quantity: number };
+      
       const { data, error } = await supabase
         .from('products')
         .select('stock_quantity')
         .eq('id', productId)
-        .single();
+        .single<StockResult>();
 
       if (error) {
         console.error('Error checking stock:', error);
@@ -174,10 +179,15 @@ class ProductsService {
   // Admin functions (would need proper auth checks in real app)
   async updateStock(productId: string, newStock: number): Promise<{ success: boolean; error: string | null }> {
     try {
-      const { error } = await supabase
+      const updateData = { stock_quantity: newStock };
+      
+      const result = await supabase
         .from('products')
-        .update({ stock_quantity: newStock })
+        // @ts-ignore - Supabase type inference issue
+        .update(updateData)
         .eq('id', productId);
+
+      const { error } = result;
 
       if (error) {
         console.error('Error updating stock:', error);
